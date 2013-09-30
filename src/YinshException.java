@@ -4,12 +4,14 @@ public class YinshException  extends Exception{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Ring ring;
-	public YinshException(Ring ring){
-		this.ring = ring;
+	public YinshException(){
+		
 	}
 	
-	public Ring getRing(){
-		return ring;
-	}
+	
+	
+	public YinshException(Color color, TypeException type) {
+		super(type.getMessage());
+		// TODO Auto-generated constructor stub
+	    }
 }
