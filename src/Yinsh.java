@@ -1,5 +1,5 @@
 /**
- * @author amazyad
+ * @author amazyad, mcherkaoui
  *
  */
 public class Yinsh {
@@ -8,23 +8,28 @@ public class Yinsh {
 	
 	int BlackPlayer = 0; // number of black ring removed
 	int WhitePlayer = 0; // number of white ring removed
-	Color winner = null;
+	Color winner = null; // le gagnant
 	
-	private int mode = 0;		 // normal or blitz
-	Color turn;
+	private int mode = 0;		 // normal or blitz, 0 pour normal, 1 pour blitz
+	private Color turn;					 // a qui le tour
 	
+	//le plateau du jeu
 	Color[][] plateau = new Color[maxColonne][maxLigne];
 	
-	
+	//pour gerer les cases inexistants en jeu 
 	//                             A  B  C  D   E   F   G   H   I   J   K
 	final int[]BorderMin=new int[]{2, 1, 1, 1,  1,  2,  2,  3,  4,  5,  7};
 	final int[]BorderMax=new int[]{5, 7, 8, 9, 10, 10, 11, 11, 11, 11, 10};
 	
+	
+	/**
+	 * Initialisation du classe
+	 */
 	public Yinsh(){
 		for(int j=0; j<maxColonne; j++){	
 			for(int i=0; i<maxLigne;i++){
-				this.plateau[j][i]=Color.NONE;
 				if((i + 1) > this.BorderMax[j] || (i + 1) < this.BorderMin[j]) this.plateau[j][i]=Color.IMPOSSIBLE;
+				else this.plateau[j][i]=Color.NONE;
 			}
 		}
 	}
@@ -43,19 +48,34 @@ public class Yinsh {
 		this.turn = turn;
 	}
 	
+	/**
+	 * @description changer le tour
+	 */
 	public void changeTurn(){
 		if(turn.Is_black() == true) this.setTurn(Color.WHITERING);
 		else if(turn.Is_white() == true) this.setTurn(Color.BLACKRING);
 	}
 	
+	/**
+	 * @author amazyad
+	 * @param mode blitz ou normal
+	 */
 	public void setMode(int mode){
 		this.mode = mode;
 	}
 	
+	/**
+	 *@author amazyad 
+	 * @return mode
+	 */
 	public int getMode(){
 		return mode;
 	}
 	
+	/**
+	 * 
+	 * @return le couleur du joueur qui commence la partie
+	 */
 	public Color current_color(){
 		int random =  (int) (Math.random() * 2);
 		System.out.println(random);
@@ -71,31 +91,48 @@ public class Yinsh {
 		}
 	}
 	
+	
 	public Color getColor(Color color){
 		if(color == Color.BLACKRING || color == Color.BLACKRINGMARKED || color == Color.BLACKMARK) return Color.BLACKRING;
 		else if(color == Color.WHITERING  || color == Color.WHITERINGMARKED || color == Color.WHITEMARK) return Color.WHITERING;
 		else return color;
 	}
 	
+	/**
+	 * 
+	 * @param positionY colonne
+	 * @param positionX ligne
+	 * @param color le couleur de l'anneau
+	 * @return true si l'anneau existe false sinon
+	 */
 	public boolean anneau_existe(int positionY, int positionX, Color color){
 		if(	this.plateau[positionY][positionX]==color) return true;
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param color
+	 * @return combien d'anneau de la couleur color existe
+	 */
 	public int nombre_anneau(Color color){
 		int counterRing = 0;
-		for(int i=0; i<maxLigne;i++){
-			for(int j=0; j<maxColonne; j++){
+		for(int j=0; j<maxColonne ;j++){
+			for(int i=(this.BorderMin[j] - 1); i< this.BorderMax[j]; i++){
 				if(this.plateau[j][i]==color) counterRing++;
 			}
 		}
 		return counterRing;
 	}
 	
+	/**
+	 * @author amazyad
+	 * @return le nombre des anneaux
+	 */
 	public int nombre_anneau(){
 		int counterRing = 0;
-		for(int i=0; i<maxLigne;i++){
-			for(int j=0; j<maxColonne; j++){
+		for(int j=0; j<maxColonne ;j++){
+			for(int i=(this.BorderMin[j] - 1); i< this.BorderMax[j]; i++){
 				if(this.plateau[j][i]==Color.WHITERING || 
 						this.plateau[j][i]==Color.BLACKRING) counterRing++;
 			}
@@ -103,6 +140,13 @@ public class Yinsh {
 		return counterRing;
 	}
 	
+	/**
+	 * @author amazyad
+	 * @param positionY
+	 * @param positionX
+	 * @param color
+	 * @throws YinshException
+	 */
 	public void put_ring(int positionY, int positionX, Color color) throws YinshException{
 		test_exception(color, this.plateau[positionY][positionX]);
 		this.plateau[positionY][positionX]=color;
@@ -110,7 +154,10 @@ public class Yinsh {
 	}
 	
 	
-	
+	/**
+	 * @author amazyad
+	 * @return true si le jeu a ete bien initialise false sinon
+	 */
 	public boolean is_initialized(){
 		int nombre_anneau_white=this.nombre_anneau(Color.WHITERING);
 		int nombre_anneau_black=this.nombre_anneau(Color.BLACKRING);
@@ -118,7 +165,13 @@ public class Yinsh {
 		else return false;
 	}
 	
-	public Color markColor(Color colorFrom, Color colorTo){
+	/**
+	 * @author amazyad
+	 * @param colorFrom
+	 * @param colorTo
+	 * @return le couleur apres l'ajout d'un anneau
+	 */
+	public Color addRing(Color colorFrom, Color colorTo){
 		if(colorTo == Color.BLACKMARK) colorTo = Color.BLACKRINGMARKED;
 		else if(colorTo == Color.WHITEMARK) colorTo = Color.WHITERINGMARKED;
 		else if (colorTo == Color.NONE){
@@ -128,7 +181,12 @@ public class Yinsh {
 		return colorTo;
 	}
 	
-	public Color unmarkColor(Color color){
+	/**
+	 * @author amazyad
+	 * @param color
+	 * @return le couleur apres la suppression(deplacement) d'un anneau
+	 */
+	public Color removeRing(Color color){
 		if(color == Color.BLACKRINGMARKED) color = Color.BLACKMARK;
 		else if(color == Color.WHITERINGMARKED) color = Color.WHITEMARK;
 		else if(color == Color.WHITEMARK || color == Color.BLACKMARK) color = Color.NONE;
@@ -136,33 +194,64 @@ public class Yinsh {
 	}
 	
 	
-	
+	/**
+	 * @author amazyad
+	 * @param positionY
+	 * @param positionX
+	 * @param color
+	 * @throws YinshException
+	 * @description il ajoute un markeur dans un anneau a un position donnee
+	 */
 	public void put_marker(int positionY, int positionX, Color color) throws YinshException{
 		test_exception(color, this.plateau[positionY][positionX]);
-		this.plateau[positionY][positionX] = markColor(this.plateau[positionY][positionX], color);
+		this.plateau[positionY][positionX] = addRing(this.plateau[positionY][positionX], color);
 	}
 	
 	
 	
-
-	public boolean move_ring(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo) throws YinshException{
+	/**
+	 * @author amazyad
+	 * @param positionYFrom
+	 * @param positionXFrom
+	 * @param positionYTo
+	 * @param positionXTo
+	 * @throws YinshException
+	 * @description deplacer un anneau d'un position a un autre.
+	 * tester s il y a un row
+	 * remove le row
+	 * remove le ring
+	 * changer le tour
+	 */
+	public void move_ring(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo) throws YinshException{
 		Color colorFrom = this.plateau[positionYFrom][positionXFrom];
 		Color colorTo = this.plateau[positionYTo][positionXTo];
 		test_exception(positionYFrom, positionXFrom, positionYTo, positionXTo);
 		
-		this.plateau[positionYFrom][positionXFrom] = unmarkColor(this.plateau[positionYFrom][positionXFrom]);
-		this.plateau[positionYTo][positionXTo] = markColor(colorFrom,colorTo);
+		this.plateau[positionYFrom][positionXFrom] = removeRing(this.plateau[positionYFrom][positionXFrom]);
+		this.plateau[positionYTo][positionXTo] = addRing(colorFrom,colorTo);
 		this.setTurn(this.getColor(this.plateau[positionYFrom][positionXFrom]));
-		return true;
 	}
 	
 	
-	
+	/**
+	 * @author amazyad
+	 * @param positionY
+	 * @param positionX
+	 * @description il change la couleur markeur du marqueur 
+	 */
 	public void flipMarker(int positionY, int positionX){
 		if(plateau[positionY][positionX] == Color.WHITEMARK) plateau[positionY][positionX] =  Color.BLACKMARK;
 		else if(plateau[positionY][positionX] == Color.BLACKMARK) plateau[positionY][positionX] =  Color.WHITEMARK;
 	}
 	
+	/**
+	 * @author amazyad
+	 * @param positionYFrom
+	 * @param positionXFrom
+	 * @param positionYTo
+	 * @param positionXTo
+	 * @description changer la couleur de plusieurs marqueur sur la meme ligne 
+	 */
 	public void flipMarkers(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
 		int replacement;
 		if(positionYFrom == positionYTo){
@@ -182,7 +271,24 @@ public class Yinsh {
 			for(int i = positionYFrom + 1; i < positionYTo; i++) flipMarker(i, positionXFrom);
 		}
 	}
+	/**
+	 * 
+	 * @return
+	 * @description tester si un row existe
+	 */
+	public Color row_exist(){
+		
+		return Color.NONE;
+	}
 	
+	/**
+	 * @author amazyad
+	 * @param positionYFrom
+	 * @param positionXFrom
+	 * @param positionYTo
+	 * @param positionXTo
+	 * @return true s il existe un row entre ce deux poisitions false sinon
+	 */
 	public boolean is_row(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
 		int beginX = 0, beginY = 0;
 		Color color = this.getTurn();
@@ -196,6 +302,14 @@ public class Yinsh {
 		return true;
 	}
 	
+	/**
+	 * @author amazyad
+	 * @param positionYFrom
+	 * @param positionXFrom
+	 * @param positionYTo
+	 * @param positionXTo
+	 * @description supprimer un row s'il existe
+	 */
 	public void remove_row(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
 		if(is_row(positionYFrom, positionXFrom, positionYTo, positionXTo)){
 			int replacement;
@@ -213,6 +327,14 @@ public class Yinsh {
 		}
 	}
 	
+	/**
+	 * @author amazyad
+	 * @param poisitonY
+	 * @param positionX
+	 * description on supprime l'anneau de notre choix 
+	 * et on ajoute un point au joueur, 
+	 * et on test si le jeu est terminee
+	 */
 	public void remove_ring(int poisitonY, int positionX){
 		Color color = plateau[poisitonY][positionX];
 		if(color.Is_ring()){
@@ -229,11 +351,24 @@ public class Yinsh {
 		}
 	}
 	
+	/**
+	 * @author amazyad
+	 * @param color
+	 * @description ajouter un point a un joueur
+	 */
 	public void gain_point(Color color){
 		if(color.getColor() == "white") this.WhitePlayer++;
 		else if(color.getColor() == "black") this.BlackPlayer++;
 	}
 	
+	/**
+	 * @author amazyad
+	 * @param positionYFrom
+	 * @param positionXFrom
+	 * @param positionYTo
+	 * @param positionXTo
+	 * @return true si le deplacement est possible, false sinon
+	 */
 	public boolean is_possible_move(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
 		if(plateau[positionYFrom][positionXFrom].Is_ring() && plateau[positionYTo][positionXTo] == Color.NONE){
 			int beginX = 0, beginY = 0;
@@ -251,6 +386,12 @@ public class Yinsh {
 		} else return false;
 	}
 	
+	/**
+	 * @author amazyad
+	 * @param positionY
+	 * @param positionX
+	 * @return tous les deplacements possible pour une case
+	 */
 	public int[][] get_possible_move(int positionY, int positionX){
 		//max possible move is 26
 		int [][] possible_move = new int[26][2];
@@ -339,6 +480,12 @@ public class Yinsh {
 		return possible_move;
 	}
 	
+	/**
+	 * @author amazyad
+	 * @return tester si le jeu est terminee
+	 * si un joueur a 1 point en mode blitz
+	 * ou si il a 3 point en mode normal
+	 */
 	public Color end_game(){
 		switch(mode){
 			case 0 :{
@@ -354,7 +501,15 @@ public class Yinsh {
 		return winner;
 	}
 	
-	
+	/**
+	 * @author amazyad
+	 * @param positionYFrom
+	 * @param positionXFrom
+	 * @param positionYTo
+	 * @param positionXTo
+	 * @throws YinshException
+	 * @description gerer les exceptions
+	 */
 	public void test_exception(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo) throws YinshException{
 		Color colorFrom = this.plateau[positionYFrom][positionXFrom];
 		Color colorTo = this.plateau[positionYTo][positionXTo];
@@ -398,7 +553,10 @@ public class Yinsh {
 	
 	///////////////////////////////////////////NEEDED FUNCTIONS //////////////////////////
 	
-	
+	/**
+	 * @author amazyad
+	 * @description afficher un tableau
+	 */
 	public void printPlateau(){
 		System.out.print("|-");
 		System.out.print("-----");
@@ -471,6 +629,11 @@ public class Yinsh {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param colonne
+	 * @return
+	 */
 	public int toY(char colonne){
 		int ascii = (int)colonne;
 		return ascii - 65;

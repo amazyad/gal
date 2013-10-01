@@ -46,10 +46,6 @@ public class aTest extends TestCase {
 		test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
 		test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
 		test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-		int nombre_anneau_white=test.nombre_anneau(Color.WHITERING);
-		int nombre_anneau_black=test.nombre_anneau(Color.BLACKRING);
-		System.out.println("nombre de blanc"+nombre_anneau_white);
-		System.out.println("nombre de blac"+nombre_anneau_black);
 		assertTrue(test.is_initialized()==true);
 		
 	}
@@ -321,20 +317,23 @@ public class aTest extends TestCase {
 		System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
 		assertTrue(test.winner == Color.BLACKRING);
 	}
-	
+	//1.1.10 Dixième histoire
+	/**
+	 * @author amazyad
+	 * @description  Dans certaines configurations, un alignement de plus de 5 marqueurs est réalisé. Dans ce cas, le joueur 
+	 * doit indiquer quels sont les 5 marqueurs qui seront retirés du plateau.
+	 */
 	public void test_row(){
 		Yinsh test = new Yinsh();
-		// blitz mode
 		make_fig_5(test);
-		test.plateau[8][9] = Color.BLACKMARK;
+		test.plateau[9][10] = Color.BLACKMARK;
 		test.printPlateau();
-		test.remove_row(4, 5, 8, 9);
-		test.remove_ring(7, 9);
+		//test.remove_row(4, 5, 8, 9);
+		//test.remove_ring(7, 9);
 		test.printPlateau();
 		System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
 		assertTrue(test.winner == Color.BLACKRING);
 	}
-	
 	
 }
 
