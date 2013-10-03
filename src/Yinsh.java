@@ -271,14 +271,134 @@ public class Yinsh {
 			for(int i = positionYFrom + 1; i < positionYTo; i++) flipMarker(i, positionXFrom);
 		}
 	}
+	
+	/**
+	 * @author amazyad
+	 * @return un tableau contenant la position de tous les marqueurs
+	 */
+	public int[][] getMarkers(){
+		int[][] markers = new int[26][2];
+		int index = 0;
+		for(int i = 0; i < maxColonne; i++){
+			for(int j=(this.BorderMin[i] - 1); j< this.BorderMax[j]; j++){
+				if(plateau[i][j].Is_marked()){
+					markers[index][0] = i;
+					markers[index][1] = j;
+					index++;
+				}
+			}
+		}
+		return markers;
+	}
 	/**
 	 * 
-	 * @return
-	 * @description tester si un row existe
+	 * @return un tableau du position du rows
+	 * @description trouver tout les rows
 	 */
-	public Color row_exist(){
-		
-		return Color.NONE;
+	public int[][] getRows(){
+		int[][] markers = getMarkers();
+		int[][] rows = new int[6][4];
+		int index = 0;
+		for(int i = 0; i < markers.length && markers[i][0] != 0 && markers[i][1] != 0; i++){
+			// on cherche le rows sur les colonnes
+			if(markers[i][1] - this.BorderMin[markers[i][0]] + 1 >= 4){
+				int positionX = markers[i][1];
+				int positionY = markers[i][0];
+				Color couleur = plateau[positionY][positionX];
+				int counter = 1;
+				for(int j=positionX - 1; j >= 0; j--){
+					if(plateau[positionY][j].Is_marked() == false 
+							|| plateau[positionY][j].getColor() != couleur.getColor()) break;
+					counter++;
+					if(counter == 5){
+						rows[index][0] = positionY;
+						rows[index][1] = positionX;
+						rows[index][2] = positionY;
+						rows[index][3] = j;
+						index++;
+					}
+				}
+			}
+			/*else if(BorderMax[markers[i][0]] - markers[i][1] - 1 >= 4){
+				int positionX = markers[i][1];
+				int positionY = markers[i][0];
+				Color couleur = plateau[positionY][positionX];
+				int counter = 1;
+				for(int j=positionX + 1; j <= BorderMax[positionY] -1; j++){
+					if(plateau[positionY][j].Is_marked() == false 
+							|| plateau[positionY][j].getColor() != couleur.getColor()) break;
+					counter++;
+					if(counter == 5){
+						rows[index][0] = positionY;
+						rows[index][1] = positionX;
+						rows[index][2] = positionY;
+						rows[index][3] = j;
+						index++;
+					}
+				}
+				
+			}*/
+			
+			// on cherche le rows sur les lignes
+			if(markers[i][0] >= 4){
+				int positionX = markers[i][1];
+				int positionY = markers[i][0];
+				Color couleur = plateau[positionY][positionX];
+				int counter = 1;
+				for(int j=positionY - 1; j >= 0; j--){
+					if(plateau[j][positionX].Is_marked() == false 
+							|| plateau[j][positionX].getColor() != couleur.getColor()) break;
+					counter++;
+					if(counter == 5){
+						rows[index][0] = positionY;
+						rows[index][1] = positionX;
+						rows[index][2] = j;
+						rows[index][3] = positionX;
+						index++;
+					}
+				}
+			}
+			/*else if(maxColonne - 1 - markers[i][0] >= 4){
+				int positionX = markers[i][1];
+				int positionY = markers[i][0];
+				Color couleur = plateau[positionY][positionX];
+				int counter = 1;
+				for(int j=positionY + 1; j <= maxColonne - 1; j++){
+					if(plateau[j][positionX].Is_marked() == false 
+							|| plateau[j][positionX].getColor() != couleur.getColor()) break;
+					counter++;
+					if(counter == 5){
+						rows[index][0] = positionY;
+						rows[index][1] = positionX;
+						rows[index][2] = j;
+						rows[index][3] = positionX;
+						index++;
+					}
+				}
+			}*/
+			
+			//on cherche les rows sur les diagonnales
+			if(markers[i][0] >= 4 && markers[i][1] >= 4){
+				int positionX = markers[i][1];
+				int positionY = markers[i][0];
+				Color couleur = plateau[positionY][positionX];
+				int counter = 1;
+				for(int j=positionY - 1, k = positionX - 1; j >= 0 && k >=0; j--, k--){
+					if(plateau[j][k].Is_marked() == false 
+							|| plateau[j][k].getColor() != couleur.getColor()) break;
+					counter++;
+					if(counter == 5){
+						rows[index][0] = j;
+						rows[index][1] = k;
+						rows[index][2] = positionY;
+						rows[index][3] = positionX;
+						index++;
+					}
+				}
+			}
+			
+		}
+		return rows;
 	}
 	
 	/**
@@ -302,6 +422,23 @@ public class Yinsh {
 		return true;
 	}
 	
+	public boolean row_exist(Color color){
+		return ((getRow())[1] == 0) ? false : true;
+	}
+	
+	public int[] getRow(){
+		Color color = this.getTurn();
+		int[][] rows = getRows();
+		int[] row = new int[4];
+		for(int i= 0; i < rows.length && rows[i][0] != 0 && rows[i][1] !=0; i++){
+			if(getColor(plateau[rows[i][0]][rows[i][1]]) == color){
+				row = rows[i];
+				break;
+			}
+		}
+		return row;
+	}
+	
 	/**
 	 * @author amazyad
 	 * @param positionYFrom
@@ -312,6 +449,29 @@ public class Yinsh {
 	 */
 	public void remove_row(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
 		if(is_row(positionYFrom, positionXFrom, positionYTo, positionXTo)){
+			int replacement;
+			if(positionYFrom > positionYTo){
+				replacement = positionYFrom;
+				positionYFrom = positionYTo;
+				positionYTo = replacement;
+				replacement = positionXFrom;
+				positionXFrom = positionXTo;
+				positionXTo= replacement;
+			}
+			for(int i = positionYFrom, j=positionXFrom ; i <= positionYTo && j <= positionXTo ; i++, j++){
+				plateau[i][j] = Color.NONE;
+			}
+		}
+	}
+	
+	public void remove_row(){
+		Color color = this.getTurn();
+		int[] row = getRow();
+		if(row_exist(color)){
+			int positionYFrom = row[0];
+			int positionXFrom = row[1];
+			int positionYTo = row[2];
+			int positionXTo = row[3];
 			int replacement;
 			if(positionYFrom > positionYTo){
 				replacement = positionYFrom;
@@ -632,7 +792,7 @@ public class Yinsh {
 	/**
 	 * 
 	 * @param colonne
-	 * @return
+	 * @return le position 
 	 */
 	public int toY(char colonne){
 		int ascii = (int)colonne;

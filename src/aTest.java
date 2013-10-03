@@ -299,11 +299,16 @@ public class aTest extends TestCase {
 		test.plateau[6][5] = Color.BLACKRING;
 		test.plateau[6][6] = Color.WHITEMARK;
 		test.plateau[6][7] = Color.BLACKMARK;
-		test.plateau[7][7] = Color.BLACKMARK;
+		test.plateau[7][7] = Color.WHITEMARK;
 		test.plateau[7][8] = Color.BLACKMARK;
 		test.plateau[7][9] = Color.BLACKRING;
-		test.plateau[8][7] = Color.WHITERING;
+		test.plateau[8][7] = Color.WHITEMARK;
 		test.plateau[8][9] = Color.BLACKMARK;
+		
+		test.plateau[7][6] = Color.WHITEMARK;
+		test.plateau[7][5] = Color.WHITEMARK;
+		test.plateau[7][4] = Color.WHITEMARK;
+		test.plateau[7][3] = Color.WHITEMARK;
 		//test.plateau[9][10] = Color.BLACKMARK;
 	}
 	
@@ -317,22 +322,35 @@ public class aTest extends TestCase {
 		System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
 		assertTrue(test.winner == Color.BLACKRING);
 	}
-	//1.1.10 Dixième histoire
+	//1.1.11 Onzieme Histoire 
 	/**
 	 * @author amazyad
 	 * @description  Dans certaines configurations, un alignement de plus de 5 marqueurs est réalisé. Dans ce cas, le joueur 
 	 * doit indiquer quels sont les 5 marqueurs qui seront retirés du plateau.
 	 */
-	public void test_row(){
+	public void test_histoire_onzieme(){
 		Yinsh test = new Yinsh();
 		make_fig_5(test);
 		test.plateau[9][10] = Color.BLACKMARK;
 		test.printPlateau();
-		//test.remove_row(4, 5, 8, 9);
-		//test.remove_ring(7, 9);
+		test.setTurn(Color.BLACKRING);
+		int[][] rows = test.getRows();
+		for(int i=0; i<rows.length; i++){
+			System.out.println(rows[i][0]+" "+rows[i][1]+" "+rows[i][2]+" "+rows[i][3]);
+		}
+		if(test.row_exist(test.getTurn())){
+			test.remove_row();
+			test.remove_ring(6, 5);
+			test.changeTurn();
+			rows = test.getRows();
+			if(test.row_exist(test.getTurn())){
+				test.remove_row();
+				test.remove_ring(2, 3);
+			}
+		}
 		test.printPlateau();
 		System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
-		assertTrue(test.winner == Color.BLACKRING);
+		assertTrue(test.BlackPlayer == 1 && test.WhitePlayer == 1);
 	}
 	
 }
