@@ -18,7 +18,7 @@ public class aTest extends TestCase {
 		Color color = test.getTurn();
 		try {
 			test.put_ring(alpha, ligne, color);
-			assertTrue(test.anneau_existe(alpha, ligne, color) == true);
+			assertTrue(test.anneau_existe(alpha, ligne, color));
 		} catch (YinshException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -46,7 +46,7 @@ public class aTest extends TestCase {
 		test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
 		test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
 		test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-		assertTrue(test.is_initialized()==true);
+		assertTrue(test.is_initialized());
 		
 	}
 	
@@ -64,7 +64,7 @@ public class aTest extends TestCase {
 		test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
 		test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
 		test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
-		assertTrue(test.anneau_existe(test.toY('D'), test.toX(2), Color.BLACKRINGMARKED)==true);
+		assertTrue(test.anneau_existe(test.toY('D'), test.toX(2), Color.BLACKRINGMARKED));
 	}
 	
 	public void test_move_ring() throws YinshException{
@@ -82,7 +82,7 @@ public class aTest extends TestCase {
 		test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
 		test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
 		test.move_ring(test.toY('D'), test.toX(2), test.toY('D'), test.toX(5));
-		assertTrue(test.anneau_existe(test.toY('D'), test.toX(5), Color.BLACKRING)==true);
+		assertTrue(test.anneau_existe(test.toY('D'), test.toX(5), Color.BLACKRING));
 	}
 	
 	public void test_put_marker_1() throws YinshException{
@@ -234,11 +234,8 @@ public class aTest extends TestCase {
 		test.plateau[7][6] = Color.WHITEMARK;
 		test.plateau[7][7] = Color.BLACKRING;
 		test.plateau[8][7] = Color.BLACKMARK;
-		//test.printPlateau();
 		int[][] possible_move = test.get_possible_move(4 , 3);
-		for(int i = 0; i < possible_move.length; i++){
-			System.out.println("("+test.toY(possible_move[i][0])+","+(possible_move[i][1] + 1)+")");
-		}
+        assertTrue(true);
 	}
 	
 	public void test_is_possible_move(){
@@ -274,7 +271,7 @@ public class aTest extends TestCase {
 		int XT = 8;
 		test.printPlateau();
 		boolean possible = test.is_possible_move(YF, XF, YT, XT);
-		assertTrue(possible == true);
+		assertTrue(possible);
 	}
 	
 	public void make_fig_5(Yinsh test){
@@ -332,17 +329,11 @@ public class aTest extends TestCase {
 		Yinsh test = new Yinsh();
 		make_fig_5(test);
 		test.plateau[9][10] = Color.BLACKMARK;
-		test.printPlateau();
 		test.setTurn(Color.BLACKRING);
-		int[][] rows = test.getRows();
-		for(int i=0; i<rows.length; i++){
-			System.out.println(rows[i][0]+" "+rows[i][1]+" "+rows[i][2]+" "+rows[i][3]);
-		}
 		if(test.row_exist(test.getTurn())){
 			test.remove_row();
 			test.remove_ring(6, 5);
 			test.changeTurn();
-			rows = test.getRows();
 			if(test.row_exist(test.getTurn())){
 				test.remove_row();
 				test.remove_ring(2, 3);
@@ -352,6 +343,25 @@ public class aTest extends TestCase {
 		System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
 		assertTrue(test.BlackPlayer == 1 && test.WhitePlayer == 1);
 	}
+
+    //1.1.11 douzieme Histoire
+    /**
+     * @author amazyad
+     * @description  Une partie normale se termine lorsque trois parmi les 5 anneaux d’un joueur ont été retirés.
+     */
+
+    public void test_douzieme_histoire_mode_normal(){
+        Yinsh test = new Yinsh();
+        make_fig_5(test);
+        test.printPlateau();
+        test.remove_ring(6, 5);
+        test.remove_ring(3, 5);
+        test.remove_ring(4, 3);
+        test.printPlateau();
+        test.end_game();
+        System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
+        assertTrue(test.BlackPlayer == 3 && test.winner == Color.BLACKRING );
+    }
 	
 }
 
