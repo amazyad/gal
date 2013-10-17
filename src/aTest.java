@@ -36,67 +36,117 @@ public class aTest extends TestCase {
         Yinsh test = new Yinsh();
         test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
         assertTrue(test.is_initialized());
 
     }
 
+    /**
+     * Cinquieme histoire test 1
+     * @throws YinshException
+     */
     public void test_put_marker() throws YinshException{
         Yinsh test = new Yinsh();
         test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
         assertTrue(test.anneau_existe(test.toY('D'), test.toX(2), Color.BLACKRINGMARKED));
     }
-
+    /**
+     * Cinquieme histoire test 2
+     * @throws YinshException
+     */
     public void test_move_ring() throws YinshException{
         Yinsh test = new Yinsh();
         test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-        test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
+        test.setTurn(Color.BLACKRING);
         test.move_ring(test.toY('D'), test.toX(2), test.toY('D'), test.toX(5));
         assertTrue(test.anneau_existe(test.toY('D'), test.toX(5), Color.BLACKRING));
     }
 
+
+    /**
+     * Cinquieme histoire test 3
+     * @throws YinshException
+     */
     public void test_put_marker_1() throws YinshException{
         Yinsh test = new Yinsh();
         test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
         test.move_ring(test.toY('D'), test.toX(2), test.toY('D'), test.toX(5));
         try {
@@ -108,36 +158,70 @@ public class aTest extends TestCase {
 
     }
 
+    /**
+     * Cinquieme histoire test 4
+     * @throws YinshException
+     */
     public void test_put_marker_2() throws YinshException{
         Yinsh test = new Yinsh();
         test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
+        try {
+            test.move_ring(test.toY('D'), test.toX(2), test.toY('D'), test.toX(6));
+            assertTrue(false);
+        } catch (YinshException e) {
+            assertTrue(true);
+        }
+
 
     }
-
+    /**
+     * Cinquieme histoire test 5
+     * @throws YinshException
+     */
     public void test_put_marker_3() throws YinshException{
         Yinsh test = new Yinsh();
         test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
+        test.setTurn(Color.WHITERING);
         test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
+        test.setTurn(Color.BLACKRING);
         test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
         try {
             test.move_ring(test.toY('D'), test.toX(2), test.toY('I'), test.toX(7));
@@ -147,6 +231,10 @@ public class aTest extends TestCase {
         }
     }
 
+    /**
+     * 6eme histoire
+     * @throws YinshException
+     */
     public void test_move_ring_ex6() throws YinshException{
         Yinsh test = new Yinsh();
         test.plateau[4][3] = Color.BLACKRINGMARKED;
@@ -167,6 +255,9 @@ public class aTest extends TestCase {
                 && test.anneau_existe(test.toY('E'), test.toX(8), Color.WHITEMARK));
     }
 
+    /**
+     * 7eme histoire
+     */
     public void test_remove_row(){
         Yinsh test = new Yinsh();
         test.plateau[4][5] = Color.BLACKMARK;
@@ -186,6 +277,9 @@ public class aTest extends TestCase {
                 && test.anneau_existe(test.toY('I'), test.toX(10), Color.NONE));
     }
 
+    /**
+     * 7eme histoire
+     */
     public void test_remove_ring(){
         Yinsh test = new Yinsh();
         test.plateau[7][9] = Color.BLACKRING;
@@ -199,6 +293,9 @@ public class aTest extends TestCase {
                 && test.BlackPlayer == 1);
     }
 
+    /**
+     * 7eme histoire
+     */
     public void test_add_player_a_point(){
         Yinsh test = new Yinsh();
         test.plateau[7][9] = Color.BLACKRING;
@@ -206,6 +303,9 @@ public class aTest extends TestCase {
         assertTrue(test.BlackPlayer == 1);
     }
 
+    /**
+     * 8eme histoire
+     */
     public void test_get_possible_move(){
         Yinsh test = new Yinsh();
         test.plateau[0][4] = Color.BLACKRING;
@@ -233,10 +333,19 @@ public class aTest extends TestCase {
         test.plateau[7][6] = Color.WHITEMARK;
         test.plateau[7][7] = Color.BLACKRING;
         test.plateau[8][7] = Color.BLACKMARK;
-        int[][] possible_move = test.get_possible_move(4 , 3);
-        assertTrue(true);
+        test.printPlateau();
+        int[][] possible_move = test.get_possible_move(test.toY('E') , test.toX(4));
+        String s="", s1="E10-E2-F4-G4-H4-I4-D4-F5-G6-J9-";
+        for(int i = 0; i < possible_move.length && possible_move[i][0] != 0 && possible_move[i][1] != 0; i++){
+            s+=test.toY(possible_move[i][0])+""+(possible_move[i][1]+1+"-");
+        }
+        //facon rapide
+        assertTrue(s.equals(s1));
     }
 
+    /**
+     * 8eme histoire
+     */
     public void test_is_possible_move(){
         Yinsh test = new Yinsh();
         test.plateau[0][4] = Color.BLACKRING;
@@ -273,8 +382,8 @@ public class aTest extends TestCase {
         assertTrue(possible);
     }
 
+
     public void make_fig_5(Yinsh test){
-        test.setMode(1);
         test.setTurn(Color.BLACKRING);
         test.plateau[2][3] = Color.WHITERING;
         test.plateau[3][1] = Color.BLACKMARK;
@@ -300,16 +409,17 @@ public class aTest extends TestCase {
         test.plateau[7][9] = Color.BLACKRING;
         test.plateau[8][7] = Color.WHITEMARK;
         test.plateau[8][9] = Color.BLACKMARK;
-
         test.plateau[7][6] = Color.WHITEMARK;
         test.plateau[7][5] = Color.WHITEMARK;
         test.plateau[7][4] = Color.WHITEMARK;
         test.plateau[7][3] = Color.WHITEMARK;
-        //test.plateau[9][10] = Color.BLACKMARK;
     }
 
+    /**
+     * 9eme histoire
+     */
     public void test_mode_blitz(){
-        Yinsh test = new Yinsh();
+        Yinsh test = new Yinsh(1);
         // blitz mode
         make_fig_5(test);
         test.printPlateau();
@@ -325,15 +435,16 @@ public class aTest extends TestCase {
      * doit indiquer quels sont les 5 marqueurs qui seront retirés du plateau.
      */
     public void test_histoire_onzieme(){
-        Yinsh test = new Yinsh();
+        Yinsh test = new Yinsh(1);
         make_fig_5(test);
         test.plateau[9][10] = Color.BLACKMARK;
         test.setTurn(Color.BLACKRING);
-        if(test.row_exist(test.getTurn())){
+        test.getRows();
+        if(test.row_exist()){
             test.remove_row();
             test.remove_ring(6, 5);
             test.changeTurn();
-            if(test.row_exist(test.getTurn())){
+            if(test.row_exist()){
                 test.remove_row();
                 test.remove_ring(2, 3);
             }
@@ -350,7 +461,7 @@ public class aTest extends TestCase {
      */
 
     public void test_douzieme_histoire_mode_normal(){
-        Yinsh test = new Yinsh();
+        Yinsh test = new Yinsh(0);
         make_fig_5(test);
         test.printPlateau();
         test.remove_ring(6, 5);
@@ -358,6 +469,7 @@ public class aTest extends TestCase {
         test.remove_ring(4, 3);
         test.printPlateau();
         test.end_game();
+        System.out.println(test.winner);
         System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
         assertTrue(test.BlackPlayer == 3 && test.winner == Color.BLACKRING );
     }
@@ -377,10 +489,91 @@ public class aTest extends TestCase {
             test.put_marker(0,1,Color.BLACKMARK);
             assertTrue(false);
         } catch(YinshException e){
+            test.end_game();
             assertTrue(true);
         }
         System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
         assertTrue(test.winner != null );
     }
 
+    //test supplementaire
+    public void test_game(){
+        Yinsh test = new Yinsh();
+        //uncomment if you want to test the game
+        /*
+        try {
+            test.Match();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (YinshException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        */
+    }
+    /**
+     * tester le rows sur le lignes
+     * doit avoir 3 rows
+     */
+    public void test_rows_line_white(){
+        Yinsh test = new Yinsh();
+        make_fig_5(test);
+        test.plateau[8][3] = Color.WHITEMARK;
+        test.plateau[8][4] = Color.WHITEMARK;
+        test.plateau[8][5] = Color.WHITEMARK;
+        test.plateau[8][6] = Color.WHITEMARK;
+        test.plateau[8][8] = Color.WHITEMARK;
+        test.printPlateau();
+        test.setTurn(Color.WHITERING);
+        test.getRows();
+        int[][] rows = test.rows;
+        int counter = 0;
+        for(int i = 0; i < rows.length && rows[i][0] != 0 && rows[i][1] != 0; i++){
+            counter++;
+            System.out.println(rows[i][0]+" "+rows[i][1]+" -> "+rows[i][2]+" "+rows[i][3]);
+        }
+        assertTrue(counter == 3);
+    }
+
+    /**
+     * tester le rows sur column
+     * doit avoir 1 rows
+     */
+    public void test_rows_col_white(){
+        Yinsh test = new Yinsh();
+        make_fig_5(test);
+        test.plateau[5][4] = Color.WHITEMARK;
+        test.plateau[6][4] = Color.WHITEMARK;
+        test.plateau[6][4] = Color.WHITEMARK;
+        test.plateau[7][5] = Color.NONE;
+        test.printPlateau();
+        test.setTurn(Color.WHITERING);
+        test.getRows();
+        int[][] rows = test.rows;
+        int counter = 0;
+        for(int i = 0; i < rows.length && rows[i][0] != 0 && rows[i][1] != 0; i++){
+            counter++;
+            System.out.println(rows[i][0]+" "+rows[i][1]+" -> "+rows[i][2]+" "+rows[i][3]);
+        }
+        assertTrue(counter == 1);
+    }
+
+    /**
+     * tester le rows sur diagonale
+     * doit avoir 2 rows
+     */
+    public void test_rows_diag_black(){
+        Yinsh test = new Yinsh();
+        make_fig_5(test);
+        test.plateau[9][10] = Color.BLACKMARK;
+        test.printPlateau();
+        test.setTurn(Color.BLACKRING);
+        test.getRows();
+        int[][] rows = test.rows;
+        int counter = 0;
+        for(int i = 0; i < rows.length && rows[i][0] != 0 && rows[i][1] != 0; i++){
+            counter++;
+            System.out.println(rows[i][0]+" "+rows[i][1]+" -> "+rows[i][2]+" "+rows[i][3]);
+        }
+        assertTrue(counter == 2);
+    }
 }

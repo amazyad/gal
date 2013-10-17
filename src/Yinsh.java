@@ -1,3 +1,6 @@
+import java.io.DataInputStream;
+import java.io.IOException;
+
 /**
  * @author amazyad, mcherkaoui
  *
@@ -13,8 +16,11 @@ public class Yinsh {
     int WhitePlayer = 0; // number of white ring removed
     Color winner = null; // le gagnant
 
-    private int mode = 0;		 // normal or blitz, 0 pour normal, 1 pour blitz
+    private int mode;		 // normal or blitz, 0 pour normal, 1 pour blitz
     private Color turn;					 // a qui le tour
+
+    //pour enregister le rows each turn
+    public int[][] rows = new int[6][4];
 
     //le plateau du jeu
     Color[][] plateau = new Color[maxColonne][maxLigne];
@@ -29,6 +35,7 @@ public class Yinsh {
      * Initialisation du classe
      */
     public Yinsh(){
+        setMode(0);
         setnMarkers(51);
         for(int j=0; j<maxColonne; j++){
             for(int i=0; i<maxLigne;i++){
@@ -101,15 +108,12 @@ public class Yinsh {
      */
     public Color current_color(){
         int random =  (int) (Math.random() * 2);
-        System.out.println(random);
         if(random==1){
             this.setTurn(Color.BLACKRING);
-            System.out.println(this.getTurn());
             return Color.BLACKRING;
         }
         else{
             this.setTurn(Color.WHITERING);
-            System.out.println(this.getTurn());
             return Color.WHITERING;
         }
     }
@@ -173,7 +177,6 @@ public class Yinsh {
     public void put_ring(int positionY, int positionX, Color color) throws YinshException{
         test_exception(color, this.plateau[positionY][positionX]);
         this.plateau[positionY][positionX]=color;
-        this.changeTurn();
     }
 
 
@@ -226,7 +229,6 @@ public class Yinsh {
      * @description il ajoute un markeur dans un anneau a un position donnee
      */
     public void put_marker(int positionY, int positionX, Color color) throws YinshException{
-        end_game();
         test_exception(color, this.plateau[positionY][positionX]);
         plateau[positionY][positionX] = addRing(this.plateau[positionY][positionX], color);
         int nMarkers = getnMarkers();
@@ -307,7 +309,9 @@ public class Yinsh {
         int index = 0;
         for(int i = 0; i < maxColonne; i++){
             for(int j=(this.BorderMin[i] - 1); j< this.BorderMax[j]; j++){
-                if(plateau[i][j].Is_marked()){
+
+                if(plateau[i][j].Is_marked() &&                             //si c'est un marqueur
+                        plateau[i][j].getColor()== getTurn().getColor()){   //si ce marqueur appartient au joueur courant
                     markers[index][0] = i;
                     markers[index][1] = j;
                     index++;
@@ -319,14 +323,15 @@ public class Yinsh {
     /**
      *
      * @return un tableau du position du rows
-     * @description trouver tout les rows
+     * @description trouver tout les rows appartenant a un joueur
      */
-    public int[][] getRows(){
+    public void getRows(){
         int[][] markers = getMarkers();
         int[][] rows = new int[6][4];
         int index = 0;
         for(int i = 0; i < markers.length && markers[i][0] != 0 && markers[i][1] != 0; i++){
             // on cherche le rows sur les colonnes
+            // pas possible d'avoir un row sur moins de 5 intersection
             if(markers[i][1] - this.BorderMin[markers[i][0]] + 1 >= 4){
                 int positionX = markers[i][1];
                 int positionY = markers[i][0];
@@ -345,27 +350,9 @@ public class Yinsh {
                     }
                 }
             }
-			/*else if(BorderMax[markers[i][0]] - markers[i][1] - 1 >= 4){
-				int positionX = markers[i][1];
-				int positionY = markers[i][0];
-				Color couleur = plateau[positionY][positionX];
-				int counter = 1;
-				for(int j=positionX + 1; j <= BorderMax[positionY] -1; j++){
-					if(plateau[positionY][j].Is_marked() == false 
-							|| plateau[positionY][j].getColor() != couleur.getColor()) break;
-					counter++;
-					if(counter == 5){
-						rows[index][0] = positionY;
-						rows[index][1] = positionX;
-						rows[index][2] = positionY;
-						rows[index][3] = j;
-						index++;
-					}
-				}
-				
-			}*/
 
             // on cherche le rows sur les lignes
+            // pas possible d'avoir un row sur moins de 5 intersection
             if(markers[i][0] >= 4){
                 int positionX = markers[i][1];
                 int positionY = markers[i][0];
@@ -384,47 +371,42 @@ public class Yinsh {
                     }
                 }
             }
-			/*else if(maxColonne - 1 - markers[i][0] >= 4){
-				int positionX = markers[i][1];
-				int positionY = markers[i][0];
-				Color couleur = plateau[positionY][positionX];
-				int counter = 1;
-				for(int j=positionY + 1; j <= maxColonne - 1; j++){
-					if(plateau[j][positionX].Is_marked() == false 
-							|| plateau[j][positionX].getColor() != couleur.getColor()) break;
-					counter++;
-					if(counter == 5){
-						rows[index][0] = positionY;
-						rows[index][1] = positionX;
-						rows[index][2] = j;
-						rows[index][3] = positionX;
-						index++;
-					}
-				}
-			}*/
 
             //on cherche les rows sur les diagonnales
+            // pas possible d'avoir un row sur moins de 5 intersection
             if(markers[i][0] >= 4 && markers[i][1] >= 4){
                 int positionX = markers[i][1];
                 int positionY = markers[i][0];
                 Color couleur = plateau[positionY][positionX];
                 int counter = 1;
-                for(int j=positionY - 1, k = positionX - 1; j >= 0 && k >=0; j--, k--){
+                for(int j=positionY, k = positionX; j >= 0 && k >=0; j--, k--){
                     if(plateau[j][k].Is_marked() == false
                             || plateau[j][k].getColor() != couleur.getColor()) break;
                     counter++;
                     if(counter == 5){
                         rows[index][0] = j;
                         rows[index][1] = k;
-                        rows[index][2] = positionY;
-                        rows[index][3] = positionX;
+                        rows[index][2] = positionY + 1;
+                        rows[index][3] = positionX + 1;
                         index++;
                     }
                 }
             }
 
         }
-        return rows;
+        this.rows = rows;
+    }
+
+    public boolean row_exist(){
+        if(this.rows[0][0] == 0 && this.rows[0][1] == 0) return false;
+        return true;
+    }
+
+    public int[] getRow(){
+        //pour le moment
+        //comme on a pa une interface pour choisir
+        //le row a enlever, on prend toujours le premier
+        return this.rows[0];
     }
 
     /**
@@ -448,22 +430,9 @@ public class Yinsh {
         return true;
     }
 
-    public boolean row_exist(Color color){
-        return ((getRow())[1] == 0) ? false : true;
-    }
 
-    public int[] getRow(){
-        Color color = this.getTurn();
-        int[][] rows = getRows();
-        int[] row = new int[4];
-        for(int i= 0; i < rows.length && rows[i][0] != 0 && rows[i][1] !=0; i++){
-            if(getColor(plateau[rows[i][0]][rows[i][1]]) == color){
-                row = rows[i];
-                break;
-            }
-        }
-        return row;
-    }
+
+
 
     /**
      * @author amazyad
@@ -493,7 +462,7 @@ public class Yinsh {
     public void remove_row(){
         Color color = this.getTurn();
         int[] row = getRow();
-        if(row_exist(color)){
+        if(row_exist()){
             int positionYFrom = row[0];
             int positionXFrom = row[1];
             int positionYTo = row[2];
@@ -529,8 +498,8 @@ public class Yinsh {
             if(color.getColor()=="white"){
                 if(color.Is_marked()) plateau[poisitonY][positionX]=Color.WHITEMARK;
                 else plateau[poisitonY][positionX]=Color.NONE;
-
-            } else {
+            }
+            else {
                 if(color.Is_marked()) plateau[poisitonY][positionX]=Color.BLACKMARK;
                 else plateau[poisitonY][positionX]=Color.NONE;
             }
@@ -676,12 +645,16 @@ public class Yinsh {
         switch(mode){
             case 0 :{
                 if(getnMarkers() == 0){
-                    if(BlackPlayer >  WhitePlayer) winner = Color.BLACKRING;
-                    else if(WhitePlayer > BlackPlayer) winner = Color.WHITERING;
-                    else winner = Color.NONE;
+                    if(BlackPlayer >  WhitePlayer)
+                        winner = Color.BLACKRING;
+                    else if(WhitePlayer > BlackPlayer)
+                        winner = Color.WHITERING;
+                    else
+                        winner = Color.NONE;
                 }
-                if(BlackPlayer == 3) winner = Color.BLACKRING;
+                else if(BlackPlayer == 3) winner = Color.BLACKRING;
                 else if(WhitePlayer == 3) winner = Color.WHITERING;
+                else winner = null;
             }
             break;
             case 1 :{
@@ -690,11 +663,109 @@ public class Yinsh {
                     else if(WhitePlayer > BlackPlayer) winner = Color.WHITERING;
                     else winner = Color.NONE;
                 }
-                if(BlackPlayer == 1) winner = Color.BLACKRING;
+                else if(BlackPlayer == 1) winner = Color.BLACKRING;
                 else if(WhitePlayer == 1) winner = Color.WHITERING;
+                else winner= null;
             }
         }
         return winner;
+    }
+
+
+
+    public boolean initMatch() throws IOException, YinshException {
+        DataInputStream in=new DataInputStream(System.in);
+        byte colonne;
+        byte ligne;
+        int positionY;
+        int positionX;
+        this.setTurn(current_color());
+        //initialize the board
+        for(int i = 0; i < 5; i= i++){
+            this.printPlateau();
+            System.out.println(getTurn().getColor()+" player: enter a place to put a ring");
+            colonne = in.readByte();
+            ligne = in.readByte();
+            positionY = toY((char)colonne);
+            positionX = toX((int)ligne);
+            put_ring(positionY, positionX, this.getTurn());
+            this.changeTurn();
+            System.out.println(getTurn().getColor()+" player: enter a place to put a ring");
+            colonne = in.readByte();
+            ligne = in.readByte();
+            positionY = toY((char)colonne);
+            positionX = toX((int)ligne);
+            put_ring(positionY, positionX, this.getTurn());
+        }
+        return is_initialized();
+
+    }
+
+    public void Match() throws IOException, YinshException {
+        DataInputStream in=new DataInputStream(System.in);
+        byte colonne;
+        byte ligne;
+        if(initMatch()){
+            int positionY;
+            int positionX;
+
+            int positionYTo;
+            int positionXTo;
+            Color color;
+
+            this.changeTurn();
+            while(end_game() == null){
+                this.printPlateau();
+                while(row_exist()){
+                    remove_row();
+                    //choose ring to remove
+                    System.out.println(getTurn().getColor()+" player: enter the position of ring to remove");
+                    colonne = in.readByte();
+                    ligne = in.readByte();
+                    colonne = in.readByte();
+                    ligne = in.readByte();
+                    positionY = toY((char)colonne);
+                    positionX = toX((int)ligne);
+                    remove_ring(positionY, positionX);
+                }
+                //choose position to put marker
+                System.out.println(getTurn().getColor()+" player: enter a position to put marker");
+                colonne = in.readByte();
+                ligne = in.readByte();
+                positionY = toY((char)colonne);
+                positionX = toX((int)ligne);
+                if(this.getTurn().Is_black()) color = Color.BLACKMARK;
+                else color = Color.WHITEMARK;
+                put_marker(positionY, positionX, color);
+
+                //choose ring to move
+                System.out.println(getTurn().getColor()+" player: enter the position of a ring to move");
+                colonne = in.readByte();
+                ligne = in.readByte();
+                positionY = toY((char)colonne);
+                positionX = toX((int)ligne);
+                //choose place to move choosen ring  to
+                System.out.println(getTurn().getColor()+" player: enter the position to move the ring to");
+                colonne = in.readByte();
+                ligne = in.readByte();
+                positionYTo = toY((char)colonne);
+                positionXTo = toX((int)ligne);
+                move_ring(positionY, positionX, positionYTo, positionXTo);
+                flipMarkers(positionY, positionX, positionYTo, positionXTo);
+                while(row_exist()){
+                    remove_row();
+                    //choose ring to remove
+                    System.out.println(getTurn().getColor()+" player: enter e place to remove a ring");
+                    colonne = in.readByte();
+                    ligne = in.readByte();
+                    positionY = toY((char)colonne);
+                    positionX = toX((int)ligne);
+                    remove_ring(positionY, positionX);
+                }
+            }
+            if(winner == Color.NONE) System.out.println("Match Null");
+            else System.out.println(getTurn().getColor()+" player win");
+        }
     }
 
     /**
