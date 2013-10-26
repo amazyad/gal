@@ -22,7 +22,7 @@ public class aTest extends TestCase {
 
     public void testPutRingAfterPutRing() throws YinshException {
         Yinsh test = new Yinsh();
-        Intersection point = test.board[3][4];
+        Intersection point = test.m_board[3][4];
         test.putRing(point, Color.WHITE);
         int blackRing = test.getRingNumber(Color.BLACK);
         int whiteRing = test.getRingNumber(Color.WHITE);
@@ -31,7 +31,7 @@ public class aTest extends TestCase {
 
     public void testPutRingImpossible() {
         Yinsh test = new Yinsh();
-        Intersection point = test.board[0][0];
+        Intersection point = test.m_board[0][0];
         try {
             test.putRing(point, Color.WHITE);
             assertTrue(false);
@@ -42,16 +42,16 @@ public class aTest extends TestCase {
 
     public void testPutRing() throws YinshException {
         Yinsh test = new Yinsh();
-        Intersection point = test.board[3][4];
+        Intersection point = test.m_board[3][4];
         test.putRing(point, Color.BLACK);
-        assertTrue(test.board[3][4].getRing() && test.board[3][4].getColor() == Color.BLACK);
+        assertTrue(test.m_board[3][4].isRing() && test.m_board[3][4].getColor() == Color.BLACK);
     }
 
     public void testPutRingAlreadyExist() {
         Yinsh test = new Yinsh();
         try {
-            test.putRing(test.board[3][4], Color.BLACK);
-            test.putRing(test.board[3][4], Color.BLACK);
+            test.putRing(test.m_board[3][4], Color.BLACK);
+            test.putRing(test.m_board[3][4], Color.BLACK);
             assertTrue(false);
         } catch (YinshException e) {
             assertTrue(true);
@@ -60,8 +60,8 @@ public class aTest extends TestCase {
 
     public void testIsInitialized() throws YinshException {
         Yinsh test = new Yinsh();
-        Intersection[] points = {test.board[3][4], test.board[3][5], test.board[3][6], test.board[3][7], test.board[3][8],
-                test.board[4][2], test.board[4][3], test.board[4][4], test.board[4][5], test.board[4][6]};
+        Intersection[] points = {test.m_board[3][4], test.m_board[3][5], test.m_board[3][6], test.m_board[3][7], test.m_board[3][8],
+                test.m_board[4][2], test.m_board[4][3], test.m_board[4][4], test.m_board[4][5], test.m_board[4][6]};
         for (int i = 0; i < points.length; i += 2) {
             test.putRing(points[i], Color.BLACK);
             test.putRing(points[i + 1], Color.WHITE);
@@ -70,8 +70,8 @@ public class aTest extends TestCase {
     }
 
     void makeFig2(Yinsh test) throws YinshException {
-        Intersection[] blackPoints = {test.board[1][0], test.board[3][1], test.board[5][6], test.board[7][7], test.board[8][7]};
-        Intersection[] whitePoints = {test.board[1][1], test.board[2][1], test.board[3][5], test.board[5][7], test.board[7][5]};
+        Intersection[] blackPoints = {test.m_board[1][0], test.m_board[3][1], test.m_board[5][6], test.m_board[7][7], test.m_board[8][7]};
+        Intersection[] whitePoints = {test.m_board[1][1], test.m_board[2][1], test.m_board[3][5], test.m_board[5][7], test.m_board[7][5]};
         for (int i = 0; i < blackPoints.length; i++) {
             test.putRing(blackPoints[i], Color.BLACK);
             test.putRing(whitePoints[i], Color.WHITE);
@@ -82,7 +82,7 @@ public class aTest extends TestCase {
         Yinsh test = new Yinsh();
         makeFig2(test);
         test.putMarker(test.getIntersection('D', 2), Color.BLACK);
-        assertTrue(test.board[3][1].isMarker());
+        assertTrue(test.m_board[3][1].isMarker());
     }
 
     public void testMoveRing() throws YinshException {
@@ -90,8 +90,8 @@ public class aTest extends TestCase {
         makeFig2(test);
         test.putMarker(test.getIntersection('D', 2), Color.BLACK);
         test.moveRing(test.getIntersection('D', 2), test.getIntersection('D', 5));
-        assertTrue(test.board[test.toY('D')][test.toX(5)].getRing() &&
-                !test.board[test.toY('D')][test.toX(2)].getRing());
+        assertTrue(test.m_board[test.toY('D')][test.toX(5)].isRing() &&
+                !test.m_board[test.toY('D')][test.toX(2)].isRing());
     }
 
     public void testPutMarkerOnOtherPlayerRing() {
@@ -131,51 +131,51 @@ public class aTest extends TestCase {
     void makeFig3Rings(Yinsh test) {
         int[][] blackRings = {{0, 4}, {3, 2}, {4, 3}, {6, 7}, {7, 7}};
         int[][] whiteRings = {{1, 3}, {1, 5}, {3, 1}, {5, 7}, {6, 6}};
-        for (int[] whiteMarker : whiteRings) test.board[whiteMarker[0]][whiteMarker[1]].putRing(Color.WHITE);
-        for (int[] blackMarker : blackRings) test.board[blackMarker[0]][blackMarker[1]].putRing(Color.BLACK);
+        for (int[] whiteMarker : whiteRings) test.m_board[whiteMarker[0]][whiteMarker[1]].putRing(Color.WHITE);
+        for (int[] blackMarker : blackRings) test.m_board[blackMarker[0]][blackMarker[1]].putRing(Color.BLACK);
     }
 
     void makeFig3Markers(Yinsh test) {
         int[][] blackMarkers = {{1, 4}, {2, 3}, {3, 6}, {4, 4}, {4, 7}, {8, 7}};
         int[][] whiteMarkers = {{2, 4}, {2, 5}, {3, 5}, {4, 2}, {4, 5}, {4, 6}, {4, 8}, {6, 8}, {7, 6}};
-        for (int[] whiteMarker : whiteMarkers) test.board[whiteMarker[0]][whiteMarker[1]].putMarker(Color.WHITE);
-        for (int[] blackMarker : blackMarkers) test.board[blackMarker[0]][blackMarker[1]].putMarker(Color.BLACK);
+        for (int[] whiteMarker : whiteMarkers) test.m_board[whiteMarker[0]][whiteMarker[1]].putMarker(Color.WHITE);
+        for (int[] blackMarker : blackMarkers) test.m_board[blackMarker[0]][blackMarker[1]].putMarker(Color.BLACK);
     }
 
     public void testFlipMarkers() throws YinshException {
         Yinsh test = new Yinsh();
         makeFig3Rings(test);
         makeFig3Markers(test);
-        test.board[test.toY('E')][test.toX(4)].putMarker(Color.BLACK);
+        test.m_board[test.toY('E')][test.toX(4)].putMarker(Color.BLACK);
         test.moveRing(test.getIntersection('E', 4), test.getIntersection('E', 10));
-        assertTrue((test.board[test.toY('E')][test.toX(4)].getColor() == Color.BLACK) &&
-                (test.board[test.toY('E')][test.toX(6)].getColor() == Color.BLACK) &&
-                (test.board[test.toY('E')][test.toX(7)].getColor() == Color.BLACK) &&
-                (test.board[test.toY('E')][test.toX(9)].getColor() == Color.BLACK) &&
-                (test.board[test.toY('E')][test.toX(5)].getColor() == Color.WHITE) &&
-                (test.board[test.toY('E')][test.toX(8)].getColor() == Color.WHITE));
+        assertTrue((test.m_board[test.toY('E')][test.toX(4)].getColor() == Color.BLACK) &&
+                (test.m_board[test.toY('E')][test.toX(6)].getColor() == Color.BLACK) &&
+                (test.m_board[test.toY('E')][test.toX(7)].getColor() == Color.BLACK) &&
+                (test.m_board[test.toY('E')][test.toX(9)].getColor() == Color.BLACK) &&
+                (test.m_board[test.toY('E')][test.toX(5)].getColor() == Color.WHITE) &&
+                (test.m_board[test.toY('E')][test.toX(8)].getColor() == Color.WHITE));
     }
 
     void makeFig5JustTheRow(Yinsh test) {
         int[][] blackMarkers = {{4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}};
         for (int[] blackMarker : blackMarkers) {
-            test.board[blackMarker[0]][blackMarker[1]].putMarker(Color.BLACK);
+            test.m_board[blackMarker[0]][blackMarker[1]].putMarker(Color.BLACK);
         }
-        test.board[7][9].putRing(Color.BLACK);
+        test.m_board[7][9].putRing(Color.BLACK);
     }
 
     public void testRemoveRow() {
         Yinsh test = new Yinsh();
         makeFig5JustTheRow(test);
         test.setTurn(test.getBlackPlayer());
-        test.removeRow(test.board[4][5], test.board[8][9]);
-        test.removeRing(test.board[7][9]);
-        assertTrue(!test.board[4][5].isMarker() &&
-                !test.board[5][6].isMarker() &&
-                !test.board[6][7].isMarker() &&
-                !test.board[7][8].isMarker() &&
-                !test.board[8][9].isMarker() &&
-                !test.board[7][9].getRing() &&
+        test.removeRow(test.m_board[4][5], test.m_board[8][9]);
+        test.removeRing(test.m_board[7][9]);
+        assertTrue(!test.m_board[4][5].isMarker() &&
+                !test.m_board[5][6].isMarker() &&
+                !test.m_board[6][7].isMarker() &&
+                !test.m_board[7][8].isMarker() &&
+                !test.m_board[8][9].isMarker() &&
+                !test.m_board[7][9].isRing() &&
                 test.getBlackPlayer().getScore() == 1);
     }
 
@@ -183,18 +183,18 @@ public class aTest extends TestCase {
         Yinsh test = new Yinsh();
         makeFig3Rings(test);
         makeFig3Markers(test);
-        List<Intersection> points = test.getPossibleMove(test.board[4][3]);
+        List<Intersection> points = test.getPossibleMove(test.m_board[4][3]);
         for (int i = 0; i < points.size(); i++)
-            assertTrue(points.contains(test.board[test.toY('E')][test.toX(2)]) &&
-                    points.contains(test.board[test.toY('E')][test.toX(10)]) &&
-                    points.contains(test.board[test.toY('D')][test.toX(4)]) &&
-                    points.contains(test.board[test.toY('F')][test.toX(4)]) &&
-                    points.contains(test.board[test.toY('G')][test.toX(4)]) &&
-                    points.contains(test.board[test.toY('H')][test.toX(4)]) &&
-                    points.contains(test.board[test.toY('I')][test.toX(4)]) &&
-                    points.contains(test.board[test.toY('F')][test.toX(5)]) &&
-                    points.contains(test.board[test.toY('G')][test.toX(6)]) &&
-                    points.contains(test.board[test.toY('J')][test.toX(9)]));
+            assertTrue(points.contains(test.m_board[test.toY('E')][test.toX(2)]) &&
+                    points.contains(test.m_board[test.toY('E')][test.toX(10)]) &&
+                    points.contains(test.m_board[test.toY('D')][test.toX(4)]) &&
+                    points.contains(test.m_board[test.toY('F')][test.toX(4)]) &&
+                    points.contains(test.m_board[test.toY('G')][test.toX(4)]) &&
+                    points.contains(test.m_board[test.toY('H')][test.toX(4)]) &&
+                    points.contains(test.m_board[test.toY('I')][test.toX(4)]) &&
+                    points.contains(test.m_board[test.toY('F')][test.toX(5)]) &&
+                    points.contains(test.m_board[test.toY('G')][test.toX(6)]) &&
+                    points.contains(test.m_board[test.toY('J')][test.toX(9)]));
 
     }
 
@@ -203,8 +203,8 @@ public class aTest extends TestCase {
         test.setMode(Yinsh.Mode.BLITZ);
         makeFig5JustTheRow(test);
         test.setTurn(test.getBlackPlayer());
-        test.removeRow(test.board[4][5], test.board[8][9]);
-        test.removeRing(test.board[7][9]);
+        test.removeRow(test.m_board[4][5], test.m_board[8][9]);
+        test.removeRing(test.m_board[7][9]);
         test.tryEndTheMatch();
         assertTrue(test.getWinner() == test.getBlackPlayer() && test.isEnd());
     }
@@ -214,9 +214,9 @@ public class aTest extends TestCase {
         makeFig5JustTheRow(test);
         int[][] whiteMarkers = {{3, 5}, {3, 6}, {3, 7}, {3, 8}, {3, 9}};
         for (int[] whiteMarker : whiteMarkers) {
-            test.board[whiteMarker[0]][whiteMarker[1]].putMarker(Color.WHITE);
+            test.m_board[whiteMarker[0]][whiteMarker[1]].putMarker(Color.WHITE);
         }
-        test.board[2][3].putRing(Color.WHITE);
+        test.m_board[2][3].putRing(Color.WHITE);
     }
 
     public void testRemoveRowFromMultipleRows() {
@@ -225,13 +225,13 @@ public class aTest extends TestCase {
         test.setTurn(test.getBlackPlayer());
         List<Intersection[]> rows = test.getRows();
         test.removeRow(rows.get(1)[0], rows.get(1)[1]);
-        test.removeRing(test.board[7][9]);
-        assertTrue(!test.board[5][6].isMarker() &&
-                !test.board[6][7].isMarker() &&
-                !test.board[7][8].isMarker() &&
-                !test.board[8][9].isMarker() &&
-                !test.board[9][10].isMarker() &&
-                !test.board[7][9].getRing() &&
+        test.removeRing(test.m_board[7][9]);
+        assertTrue(!test.m_board[5][6].isMarker() &&
+                !test.m_board[6][7].isMarker() &&
+                !test.m_board[7][8].isMarker() &&
+                !test.m_board[8][9].isMarker() &&
+                !test.m_board[9][10].isMarker() &&
+                !test.m_board[7][9].isRing() &&
                 test.getBlackPlayer().getScore() == 1);
     }
 
@@ -241,11 +241,11 @@ public class aTest extends TestCase {
         test.setTurn(test.getBlackPlayer());
         List<Intersection[]> rows = test.getRows();
         test.removeRow(rows.get(0)[0], rows.get(0)[1]);
-        test.removeRing(test.board[7][9]);
+        test.removeRing(test.m_board[7][9]);
         test.changeTurn();
         rows = test.getRows();
         test.removeRow(rows.get(0)[0], rows.get(0)[1]);
-        test.removeRing(test.board[2][3]);
+        test.removeRing(test.m_board[2][3]);
         assertTrue(test.getBlackPlayer().getScore() == 1 && test.getWhitePlayer().getScore() == 1);
     }
 

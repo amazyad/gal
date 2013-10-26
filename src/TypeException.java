@@ -7,13 +7,13 @@ public enum TypeException {
     NEED_A_RING("YOU CAN'T PUT A MARK ON AN EMPTY CASE"),
     IMPOSSIBLE("IMPOSSIBLE MOVE");
 
-    private final String message;
+    private final String m_message;
 
     TypeException(String message) {
-        this.message = message;
+        this.m_message = message;
     }
 
     public String getMessage() {
-        return message;
+        return m_message;
     }
 }

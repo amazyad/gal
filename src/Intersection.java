@@ -1,59 +1,59 @@
 
 public class Intersection {
-    public int column;
-    public int line;
-    private Color color;
-    private Boolean isMarker;
-    private Boolean isRing;
+    public int m_column;
+    public int m_line;
+    private Color m_color;
+    private Boolean m_marker;
+    private Boolean m_ring;
 
     Intersection(int column, int line) {
-        this.column = column;
-        this.line = line;
-        this.isMarker = false;
-        this.isRing = false;
+        this.m_column = column;
+        this.m_line = line;
+        this.m_marker = false;
+        this.m_ring = false;
     }
 
     Intersection(char column, int line) {
-        this.column = (int) column - 65;
-        this.line = line - 1;
-        this.isMarker = false;
-        this.isRing = false;
+        this.m_column = (int) column - 65;
+        this.m_line = line - 1;
+        this.m_marker = false;
+        this.m_ring = false;
     }
 
     public void putRing(Color color) {
-        this.isRing = true;
-        this.color = color;
+        this.m_ring = true;
+        this.m_color = color;
     }
 
     public void putMarker(Color color) {
-        this.isMarker = true;
-        this.color = color;
+        this.m_marker = true;
+        this.m_color = color;
     }
 
     public void removeRing() {
-        this.isRing = false;
-        this.color = this.isMarker() ? this.color : Color.UNDEFINED;
+        this.m_ring = false;
+        this.m_color = this.isMarker() ? this.m_color : Color.UNDEFINED;
     }
 
     public void removeMarker() {
-        this.isMarker = false;
-        this.color = this.getRing() ? this.color : Color.UNDEFINED;
+        this.m_marker = false;
+        this.m_color = this.isRing() ? this.m_color : Color.UNDEFINED;
     }
 
     public Boolean isMarker() {
-        return isMarker;
+        return m_marker;
     }
 
-    public Boolean getRing() {
-        return isRing;
+    public Boolean isRing() {
+        return m_ring;
     }
 
     public Color getColor() {
-        return this.color;
+        return this.m_color;
     }
 
     public void setColor(Color color) {
-        this.color = color;
+        this.m_color = color;
     }
 
 
