@@ -1,23 +1,19 @@
-
 public enum TypeException {
-	STEP_ERROR("IMPOSSIBLE MOVE"),
-	STEP_NOT_PERMITTED("MOVE NOT PERMITTED"),
-	OTHER_PLAYER_FIELD("YOU CAN'T MOVE INTO OTHER PLAYER CASES"),
-	COLOR_ON_COLOR("THIS CASE ISN'T EMPTY"),
-	NEED_A_RING("YOU CAN'T PUT A MARK ON AN EMPTY CASE"),
-	IMPOSSIBLE("IMPOSSIBLE MOVE"),
-	NOT_YOUR_RING_MARK("NOT YOUR RING/MARK"),
-	FULL_CASE("CASE IS FULL"),
-	GAME_ENDED("THE GAME IS FINISHED");
-	
-	private final String message;
-	TypeException(String message){
-		this.message = message;
-	}
-	/**
-	 * @return the message
-	 */
-	public String getMessage() {
-		return message;
-	}
+
+    RING_ALREADY_EXIST("A ring already exist in this case"),
+    NOT_YOUR_TURN("It is not your turn"),
+    CANT_JUMP_OVER_RING("You can't move your ring over another ring"),
+    MUST_BE_EMPTY("You can't move a ring on a non empty intersection"),
+    NEED_A_RING("YOU CAN'T PUT A MARK ON AN EMPTY CASE"),
+    IMPOSSIBLE("IMPOSSIBLE MOVE");
+
+    private final String message;
+
+    TypeException(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

@@ -1,81 +1,90 @@
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author amazyad, mcherkaoui
- *
- */
-public class Yinsh {
-    static int maxLigne=11;
-    static int maxColonne=11;
+class Yinsh {
+
+    private final int maxLigne = 11;
+    private final int maxColonne = 11;
 
 
-    private int nMarkers;
+    private int nMarkers = 51;
 
-    int BlackPlayer = 0; // number of black ring removed
-    int WhitePlayer = 0; // number of white ring removed
-    Color winner = null; // le gagnant
+    private Player blackPlayer;
+    private Player whitePlayer;
+    private Player turn;
+    private Player winner;
 
-    private int mode;		 // normal or blitz, 0 pour normal, 1 pour blitz
-    private Color turn;					 // a qui le tour
+    private boolean isEnd;
 
-    //pour enregister le rows each turn
-    public int[][] rows = new int[6][4];
+    private Mode mode;
 
     //le plateau du jeu
-    Color[][] plateau = new Color[maxColonne][maxLigne];
+    public Intersection[][] board = new Intersection[maxColonne][maxLigne];
 
     //pour gerer les cases inexistants en jeu
+    //                             0  1  2  3   4   5   6   7   8   9   10
     //                             A  B  C  D   E   F   G   H   I   J   K
-    final int[]BorderMin=new int[]{2, 1, 1, 1,  1,  2,  2,  3,  4,  5,  7};
-    final int[]BorderMax=new int[]{5, 7, 8, 9, 10, 10, 11, 11, 11, 11, 10};
+    private final int[] BorderMin = new int[]{1, 0, 0, 0, 0, 1, 1, 2, 3, 4, 6};
+    private final int[] BorderMax = new int[]{4, 6, 7, 8, 9, 9, 10, 10, 10, 10, 9};
 
-
-    /**
-     * Initialisation du classe
-     */
-    public Yinsh(){
-        setMode(0);
-        setnMarkers(51);
-        for(int j=0; j<maxColonne; j++){
-            for(int i=0; i<maxLigne;i++){
-                if((i + 1) > this.BorderMax[j] || (i + 1) < this.BorderMin[j]) this.plateau[j][i]=Color.IMPOSSIBLE;
-                else this.plateau[j][i]=Color.NONE;
+    public Yinsh() {
+        isEnd = false;
+        for (int j = 0; j < maxColonne; j++)
+            for (int i = 0; i < maxLigne; i++) {
+                board[j][i] = initIntersection(j, i);
             }
-        }
+        blackPlayer = new Player(Color.BLACK);
+        whitePlayer = new Player(Color.WHITE);
+        setFirstTurn();
     }
 
-    public Yinsh(int mode){
-        setMode(mode);
-        setnMarkers(51);
-        for(int j=0; j<maxColonne; j++){
-            for(int i=0; i<maxLigne;i++){
-                if((i + 1) > this.BorderMax[j] || (i + 1) < this.BorderMin[j]) this.plateau[j][i]=Color.IMPOSSIBLE;
-                else this.plateau[j][i]=Color.NONE;
-            }
-        }
+    private Intersection initIntersection(int column, int line) {
+        Intersection point = new Intersection(column, line);
+        Color color = Color.UNDEFINED;
+        if (column > this.BorderMax[line] || column < this.BorderMin[line])
+            color = Color.IMPOSSIBLE;
+        point.setColor(color);
+        return point;
     }
 
-    /**
-     * @return the turn
-     */
-    public Color getTurn() {
+
+    public Player getBlackPlayer() {
+        return blackPlayer;
+    }
+
+
+    public Player getWhitePlayer() {
+        return whitePlayer;
+    }
+
+
+    public Player getTurn() {
         return turn;
     }
 
-    /**
-     * @param turn the turn to set
-     */
-    public void setTurn(Color turn) {
+    public void setTurn(Player turn) {
         this.turn = turn;
     }
 
-    /**
-     * @description changer le tour
-     */
-    public void changeTurn(){
-        if(turn.Is_black() == true) this.setTurn(Color.WHITERING);
-        else if(turn.Is_white() == true) this.setTurn(Color.BLACKRING);
+    public void changeTurn() {
+        if (getTurn() == blackPlayer) setTurn(whitePlayer);
+        else setTurn(blackPlayer);
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     public int getnMarkers() {
@@ -86,834 +95,246 @@ public class Yinsh {
         this.nMarkers = nMarkers;
     }
 
-    /**
-     * @author amazyad
-     * @param mode blitz ou normal
-     */
-    public void setMode(int mode){
-        this.mode = mode;
+    public boolean isEnd() {
+        return isEnd;
     }
 
-    /**
-     *@author amazyad
-     * @return mode
-     */
-    public int getMode(){
-        return mode;
+    public void setEnd() {
+        isEnd = true;
     }
 
-    /**
-     *
-     * @return le couleur du joueur qui commence la partie
-     */
-    public Color current_color(){
-        int random =  (int) (Math.random() * 2);
-        if(random==1){
-            this.setTurn(Color.BLACKRING);
-            return Color.BLACKRING;
-        }
-        else{
-            this.setTurn(Color.WHITERING);
-            return Color.WHITERING;
-        }
+    public Intersection getIntersection(char column, int line){
+        int c = toY(column), l = line - 1;
+        return board[c][l];
     }
 
+    public Color currentColor() {
+        int random = (int) (Math.random() * 2);
+        Color color;
+        if (random == 1)
+            color = Color.BLACK;
+        else
+            color = Color.WHITE;
 
-    public Color getColor(Color color){
-        if(color == Color.BLACKRING || color == Color.BLACKRINGMARKED || color == Color.BLACKMARK) return Color.BLACKRING;
-        else if(color == Color.WHITERING  || color == Color.WHITERINGMARKED || color == Color.WHITEMARK) return Color.WHITERING;
-        else return color;
-    }
-
-    /**
-     *
-     * @param positionY colonne
-     * @param positionX ligne
-     * @param color le couleur de l'anneau
-     * @return true si l'anneau existe false sinon
-     */
-    public boolean anneau_existe(int positionY, int positionX, Color color){
-        if(	this.plateau[positionY][positionX]==color) return true;
-        return false;
-    }
-
-    /**
-     *
-     * @param color
-     * @return combien d'anneau de la couleur color existe
-     */
-    public int nombre_anneau(Color color){
-        int counterRing = 0;
-        for(int j=0; j<maxColonne ;j++){
-            for(int i=(this.BorderMin[j] - 1); i< this.BorderMax[j]; i++){
-                if(this.plateau[j][i]==color) counterRing++;
-            }
-        }
-        return counterRing;
-    }
-
-    /**
-     * @author amazyad
-     * @return le nombre des anneaux
-     */
-    public int nombre_anneau(){
-        int counterRing = 0;
-        for(int j=0; j<maxColonne ;j++){
-            for(int i=(this.BorderMin[j] - 1); i< this.BorderMax[j]; i++){
-                if(this.plateau[j][i]==Color.WHITERING ||
-                        this.plateau[j][i]==Color.BLACKRING) counterRing++;
-            }
-        }
-        return counterRing;
-    }
-
-    /**
-     * @author amazyad
-     * @param positionY
-     * @param positionX
-     * @param color
-     * @throws YinshException
-     */
-    public void put_ring(int positionY, int positionX, Color color) throws YinshException{
-        test_exception(color, this.plateau[positionY][positionX]);
-        this.plateau[positionY][positionX]=color;
-    }
-
-
-    /**
-     * @author amazyad
-     * @return true si le jeu a ete bien initialise false sinon
-     */
-    public boolean is_initialized(){
-        int nombre_anneau_white=this.nombre_anneau(Color.WHITERING);
-        int nombre_anneau_black=this.nombre_anneau(Color.BLACKRING);
-        if(nombre_anneau_white==5 && nombre_anneau_black==5) return true;
-        else return false;
-    }
-
-    /**
-     * @author amazyad
-     * @param colorFrom
-     * @param colorTo
-     * @return le couleur apres l'ajout d'un anneau
-     */
-    public Color addRing(Color colorFrom, Color colorTo){
-        if(colorTo == Color.BLACKMARK) colorTo = Color.BLACKRINGMARKED;
-        else if(colorTo == Color.WHITEMARK) colorTo = Color.WHITERINGMARKED;
-        else if (colorTo == Color.NONE){
-            if(colorFrom == Color.WHITERINGMARKED || colorFrom == Color.WHITERING)  colorTo = Color.WHITERING;
-            else if(colorFrom == Color.BLACKRINGMARKED || colorFrom == Color.BLACKRING) colorTo = Color.BLACKRING;
-        }
-        return colorTo;
-    }
-
-    /**
-     * @author amazyad
-     * @param color
-     * @return le couleur apres la suppression(deplacement) d'un anneau
-     */
-    public Color removeRing(Color color){
-        if(color == Color.BLACKRINGMARKED) color = Color.BLACKMARK;
-        else if(color == Color.WHITERINGMARKED) color = Color.WHITEMARK;
-        else if(color == Color.WHITEMARK || color == Color.BLACKMARK) color = Color.NONE;
         return color;
     }
 
-
-    /**
-     * @author amazyad
-     * @param positionY
-     * @param positionX
-     * @param color
-     * @throws YinshException
-     * @description il ajoute un markeur dans un anneau a un position donnee
-     */
-    public void put_marker(int positionY, int positionX, Color color) throws YinshException{
-        test_exception(color, this.plateau[positionY][positionX]);
-        plateau[positionY][positionX] = addRing(this.plateau[positionY][positionX], color);
-        int nMarkers = getnMarkers();
-        setnMarkers(nMarkers-1);
+    public void setFirstTurn() {
+        Color color = currentColor();
+        if (color == Color.BLACK) setTurn(getBlackPlayer());
+        else setTurn(getWhitePlayer());
     }
 
-
-
-    /**
-     * @author amazyad
-     * @param positionYFrom
-     * @param positionXFrom
-     * @param positionYTo
-     * @param positionXTo
-     * @throws YinshException
-     * @description deplacer un anneau d'un position a un autre.
-     * tester s il y a un row
-     * remove le row
-     * remove le ring
-     * changer le tour
-     */
-    public void move_ring(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo) throws YinshException{
-        Color colorFrom = this.plateau[positionYFrom][positionXFrom];
-        Color colorTo = this.plateau[positionYTo][positionXTo];
-        test_exception(positionYFrom, positionXFrom, positionYTo, positionXTo);
-
-        this.plateau[positionYFrom][positionXFrom] = removeRing(this.plateau[positionYFrom][positionXFrom]);
-        this.plateau[positionYTo][positionXTo] = addRing(colorFrom,colorTo);
-        this.setTurn(this.getColor(this.plateau[positionYFrom][positionXFrom]));
+    public void putRing(Intersection point, Color color) throws YinshException {
+        if (point.getColor() == Color.IMPOSSIBLE) throw new YinshException(TypeException.IMPOSSIBLE);
+        if (point.getRing()) throw new YinshException(TypeException.RING_ALREADY_EXIST);
+        point.putRing(color);
     }
 
-
-    /**
-     * @author amazyad
-     * @param positionY
-     * @param positionX
-     * @description il change la couleur markeur du marqueur
-     */
-    public void flipMarker(int positionY, int positionX){
-        if(plateau[positionY][positionX] == Color.WHITEMARK) plateau[positionY][positionX] =  Color.BLACKMARK;
-        else if(plateau[positionY][positionX] == Color.BLACKMARK) plateau[positionY][positionX] =  Color.WHITEMARK;
-    }
-
-    /**
-     * @author amazyad
-     * @param positionYFrom
-     * @param positionXFrom
-     * @param positionYTo
-     * @param positionXTo
-     * @description changer la couleur de plusieurs marqueur sur la meme ligne
-     */
-    public void flipMarkers(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
-        int replacement;
-        if(positionYFrom == positionYTo){
-            if(positionXFrom > positionXTo){
-                replacement = positionXFrom;
-                positionXFrom = positionXTo;
-                positionXTo = replacement;
+    public int getRingNumber(Color color) {
+        int counterRing = 0;
+        for (int j = 0; j < maxColonne; j++) {
+            for (int i = 0; i < maxLigne; i++) {
+                if (board[j][i].getColor() == color) counterRing++;
             }
-            for(int i = positionXFrom + 1; i < positionXTo; i++) flipMarker(positionYFrom, i);
         }
-        else if(positionXFrom == positionXTo){
-            if(positionYFrom > positionYTo){
-                replacement = positionYFrom;
-                positionYFrom = positionYTo;
-                positionYTo = replacement;
-            }
-            for(int i = positionYFrom + 1; i < positionYTo; i++) flipMarker(i, positionXFrom);
+        return counterRing;
+    }
+
+    public boolean isInitialized() {
+        int blackRingNumber = getRingNumber(Color.BLACK);
+        int whiteRingNumber = getRingNumber(Color.WHITE);
+        return (blackRingNumber == 5 && whiteRingNumber == 5);
+    }
+
+    public void putMarker(Intersection point, Color color) throws YinshException {
+        int c = point.column, l = point.line;
+        if (!board[c][l].getRing()) throw new YinshException(TypeException.NEED_A_RING);
+        else if (board[c][l].getColor() != color) throw new YinshException(TypeException.NOT_YOUR_TURN);
+        setnMarkers(getnMarkers() - 1);
+        board[c][l].putMarker(color);
+    }
+
+    private int[] getHowToMoveFromToIntersection(Intersection point1, Intersection point2) {
+        int[] howToMoveFromToIntersection = new int[2];
+        if (point2.column - point1.column != 0)
+            howToMoveFromToIntersection[0] = (point2.column - point1.column) / Math.abs(point2.column - point1.column);
+        if (point2.line - point1.line != 0)
+            howToMoveFromToIntersection[1] = (point2.line - point1.line) / Math.abs(point2.line - point1.line);
+        return howToMoveFromToIntersection;
+    }
+
+    private boolean isPossibleMove(Intersection point1, Intersection point2) {
+        int[] howToMove = getHowToMoveFromToIntersection(point1, point2);
+        boolean isPossibleMove = (point2.getColor() == Color.UNDEFINED);
+        boolean doIJumpedOverAMarker = false;
+        int i = point1.column + howToMove[0], j = point1.line + howToMove[1];
+        while ((i != point2.column || j != point2.line) && isPossibleMove) {
+            if (board[i][j].getRing()) isPossibleMove = false;
+            if (board[i][j].isMarker()) doIJumpedOverAMarker = true;
+            if (board[i][j].getColor() == Color.UNDEFINED && doIJumpedOverAMarker) isPossibleMove = false;
+            i += howToMove[0];
+            j += howToMove[1];
+        }
+        return isPossibleMove;
+    }
+
+    public void moveRing(Intersection point1, Intersection point2) throws YinshException {
+        int cFrom = point1.column, cTo = point2.column, lFrom = point1.line, lTo = point2.line;
+
+        if (board[cTo][lTo].getColor() != Color.UNDEFINED) throw new YinshException(TypeException.MUST_BE_EMPTY);
+        if (!isPossibleMove(board[cFrom][lFrom], board[cTo][lTo]))
+            throw new YinshException(TypeException.CANT_JUMP_OVER_RING);
+
+        flipMarkers(board[cFrom][lFrom], board[cTo][lTo]);
+
+        board[cTo][lTo].putRing(board[cFrom][lFrom].getColor());
+        board[cFrom][lFrom].removeRing();
+    }
+
+    public void flipMarkers(Intersection point1, Intersection point2) {
+        int[] howToMove = getHowToMoveFromToIntersection(point1, point2);
+        int i = point1.column + howToMove[0], j = point1.line + howToMove[1];
+
+        while (i != point2.column || j != point2.line) {
+
+            if (board[i][j].isMarker())
+                if (board[i][j].getColor() == Color.BLACK) board[i][j].setColor(Color.WHITE);
+                else board[i][j].setColor(Color.BLACK);
+
+            i += howToMove[0];
+            j += howToMove[1];
         }
     }
 
-    /**
-     * @author amazyad
-     * @return un tableau contenant la position de tous les marqueurs
-     */
-    public int[][] getMarkers(){
-        int[][] markers = new int[26][2];
-        int index = 0;
-        for(int i = 0; i < maxColonne; i++){
-            for(int j=(this.BorderMin[i] - 1); j< this.BorderMax[j]; j++){
+    private void removeMarker(Intersection point) {
+        point.removeMarker();
+    }
 
-                if(plateau[i][j].Is_marked() &&                             //si c'est un marqueur
-                        plateau[i][j].getColor()== getTurn().getColor()){   //si ce marqueur appartient au joueur courant
-                    markers[index][0] = i;
-                    markers[index][1] = j;
-                    index++;
+    private Boolean isRow(Intersection point1, Intersection point2) {
+        int[] howToMove = getHowToMoveFromToIntersection(point1, point2);
+        int i = point1.column + howToMove[0], j = point1.line + howToMove[1];
+        Color color = point1.getColor();
+        Boolean isARow = point1.isMarker();
+
+        while (!(i == point2.column && j == point2.line) && isARow) {
+            if (!(board[i][j].isMarker() && board[i][j].getColor() == color))
+                isARow = false;
+            i += howToMove[0];
+            j += howToMove[1];
+        }
+        return isARow;
+    }
+
+    public void removeRow(Intersection point1, Intersection point2) {
+        int[] howToMove = getHowToMoveFromToIntersection(point1, point2);
+        int i = point1.column, j = point1.line;
+        if (isRow(point1, point2)) {
+            while (i != point2.column || j != point2.line) {
+                removeMarker(board[i][j]);
+                i += howToMove[0];
+                j += howToMove[1];
+            }
+            removeMarker(board[i][j]);
+        }
+    }
+
+    public void removeRing(Intersection point) {
+        turn.setScore(turn.getScore() + 1);
+        point.removeRing();
+    }
+
+    public Intersection nextIntersection(Intersection point, int[] direction) {
+        Intersection rPoint = board[0][0];
+        if (point.column < 10 && point.column > 0 && point.line < 10 && point.line > 0)
+            rPoint = board[point.column + direction[0]][point.line + direction[1]];
+        return rPoint;
+    }
+
+    public List<Intersection> getPossibleMove(Intersection point) {
+        List<Intersection> possibleMove = new ArrayList<Intersection>();
+        int[][] direction = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}};
+        if (point.getRing()) {
+            for (int[] aDirection : direction) {
+                Intersection iterationPoint = nextIntersection(point, aDirection);
+                while (iterationPoint.getColor() == Color.UNDEFINED || iterationPoint.isMarker()) {
+                    if (isPossibleMove(point, iterationPoint)) possibleMove.add(iterationPoint);
+                    iterationPoint = nextIntersection(iterationPoint, aDirection);
                 }
+            }
+        }
+        return possibleMove;
+    }
+
+    public List<Intersection> getMarkers() {
+        List<Intersection> markers = new ArrayList<Intersection>();
+        for (int i = 0; i < maxColonne - 4; i++) {
+            for (int j = this.BorderMin[i]; j <= this.BorderMax[j] - 4; j++) {
+                if (board[i][j].isMarker() && board[i][j].getColor() == turn.getColor())
+                    markers.add(board[i][j]);
             }
         }
         return markers;
     }
-    /**
-     *
-     * @return un tableau du position du rows
-     * @description trouver tout les rows appartenant a un joueur
-     */
-    public void getRows(){
-        int[][] markers = getMarkers();
-        int[][] rows = new int[6][4];
-        int index = 0;
-        for(int i = 0; i < markers.length && markers[i][0] != 0 && markers[i][1] != 0; i++){
-            // on cherche le rows sur les colonnes
-            // pas possible d'avoir un row sur moins de 5 intersection
-            if(markers[i][1] - this.BorderMin[markers[i][0]] + 1 >= 4){
-                int positionX = markers[i][1];
-                int positionY = markers[i][0];
-                Color couleur = plateau[positionY][positionX];
-                int counter = 1;
-                for(int j=positionX - 1; j >= 0; j--){
-                    if(plateau[positionY][j].Is_marked() == false
-                            || plateau[positionY][j].getColor() != couleur.getColor()) break;
-                    counter++;
-                    if(counter == 5){
-                        rows[index][0] = positionY;
-                        rows[index][1] = positionX;
-                        rows[index][2] = positionY;
-                        rows[index][3] = j;
-                        index++;
-                    }
-                }
-            }
 
-            // on cherche le rows sur les lignes
-            // pas possible d'avoir un row sur moins de 5 intersection
-            if(markers[i][0] >= 4){
-                int positionX = markers[i][1];
-                int positionY = markers[i][0];
-                Color couleur = plateau[positionY][positionX];
-                int counter = 1;
-                for(int j=positionY - 1; j >= 0; j--){
-                    if(plateau[j][positionX].Is_marked() == false
-                            || plateau[j][positionX].getColor() != couleur.getColor()) break;
-                    counter++;
-                    if(counter == 5){
-                        rows[index][0] = positionY;
-                        rows[index][1] = positionX;
-                        rows[index][2] = j;
-                        rows[index][3] = positionX;
-                        index++;
-                    }
-                }
-            }
-
-            //on cherche les rows sur les diagonnales
-            // pas possible d'avoir un row sur moins de 5 intersection
-            if(markers[i][0] >= 4 && markers[i][1] >= 4){
-                int positionX = markers[i][1];
-                int positionY = markers[i][0];
-                Color couleur = plateau[positionY][positionX];
-                int counter = 1;
-                for(int j=positionY, k = positionX; j >= 0 && k >=0; j--, k--){
-                    if(plateau[j][k].Is_marked() == false
-                            || plateau[j][k].getColor() != couleur.getColor()) break;
-                    counter++;
-                    if(counter == 5){
-                        rows[index][0] = j;
-                        rows[index][1] = k;
-                        rows[index][2] = positionY + 1;
-                        rows[index][3] = positionX + 1;
-                        index++;
-                    }
-                }
-            }
-
-        }
-        this.rows = rows;
-    }
-
-    public boolean row_exist(){
-        if(this.rows[0][0] == 0 && this.rows[0][1] == 0) return false;
-        return true;
-    }
-
-    public int[] getRow(){
-        //pour le moment
-        //comme on a pa une interface pour choisir
-        //le row a enlever, on prend toujours le premier
-        return this.rows[0];
-    }
-
-    /**
-     * @author amazyad
-     * @param positionYFrom
-     * @param positionXFrom
-     * @param positionYTo
-     * @param positionXTo
-     * @return true s il existe un row entre ce deux poisitions false sinon
-     */
-    public boolean is_row(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
-        int beginX = 0, beginY = 0;
-        Color color = this.getTurn();
-        if (positionYTo - positionYFrom != 0) beginY = (positionYTo - positionYFrom) / Math.abs(positionYTo - positionYFrom);
-        if (positionXTo - positionXFrom != 0) beginX = (positionXTo - positionXFrom) / Math.abs(positionXTo - positionXFrom);
-        if(beginX * beginY == 1 || beginX * beginY == 0){
-            for(int i = positionYFrom, j = positionXFrom; beginY * i <= beginY * positionYTo && beginX * j <= beginX * positionXTo; i = i + beginY, j = j + beginX){
-                if(plateau[i][j].Is_marked() == false || this.getColor(color) != this.getColor(plateau[i][j])) return false;
+    public List<Intersection[]> getRows() {
+        List<Intersection[]> rows = new ArrayList<Intersection[]>();
+        List<Intersection> markers = getMarkers();
+        int[][] rDirection = {{1, 0}, {0, 1}, {1, 1}};
+        for (Intersection marker : markers) {
+            for (int[] aRDirection : rDirection) {
+                if (isRow(marker, board[marker.column + (4 * aRDirection[0])][marker.line + (4 * aRDirection[1])]))
+                    rows.add(new Intersection[]{marker, board[marker.column + (4 * aRDirection[0])][marker.line + (4 * aRDirection[1])]});
             }
         }
-        return true;
+        return rows;
     }
 
+    private void endGameWhoHastheHighestScoreIsTheWinner() {
+        setEnd();
+        if (blackPlayer.getScore() > whitePlayer.getScore()) setWinner(getBlackPlayer());
+        else if (whitePlayer.getScore() > blackPlayer.getScore()) setWinner(getWhitePlayer());
+    }
 
+    private void whoGetThisScoreIsTheWinner(int score) {
+        if (blackPlayer.getScore() == score) {
+            setEnd();
+            setWinner(getBlackPlayer());
+        } else if (whitePlayer.getScore() == score) {
+            setEnd();
+            setWinner(getWhitePlayer());
+        }
+    }
 
-
-
-    /**
-     * @author amazyad
-     * @param positionYFrom
-     * @param positionXFrom
-     * @param positionYTo
-     * @param positionXTo
-     * @description supprimer un row s'il existe
-     */
-    public void remove_row(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
-        if(is_row(positionYFrom, positionXFrom, positionYTo, positionXTo)){
-            int replacement;
-            if(positionYFrom > positionYTo){
-                replacement = positionYFrom;
-                positionYFrom = positionYTo;
-                positionYTo = replacement;
-                replacement = positionXFrom;
-                positionXFrom = positionXTo;
-                positionXTo= replacement;
-            }
-            for(int i = positionYFrom, j=positionXFrom ; i <= positionYTo && j <= positionXTo ; i++, j++){
-                plateau[i][j] = Color.NONE;
+    public void tryEndTheMatch() {
+        if (getnMarkers() <= 0)
+            endGameWhoHastheHighestScoreIsTheWinner();
+        else {
+            switch (getMode()) {
+                case NORMAL:
+                    whoGetThisScoreIsTheWinner(3);
+                    break;
+                case BLITZ:
+                    whoGetThisScoreIsTheWinner(1);
+                    break;
             }
         }
     }
 
-    public void remove_row(){
-        Color color = this.getTurn();
-        int[] row = getRow();
-        if(row_exist()){
-            int positionYFrom = row[0];
-            int positionXFrom = row[1];
-            int positionYTo = row[2];
-            int positionXTo = row[3];
-            int replacement;
-            if(positionYFrom > positionYTo){
-                replacement = positionYFrom;
-                positionYFrom = positionYTo;
-                positionYTo = replacement;
-                replacement = positionXFrom;
-                positionXFrom = positionXTo;
-                positionXTo= replacement;
-            }
-            for(int i = positionYFrom, j=positionXFrom ; i <= positionYTo && j <= positionXTo ; i++, j++){
-                plateau[i][j] = Color.NONE;
-            }
-        }
-    }
-
-    /**
-     * @author amazyad
-     * @param poisitonY
-     * @param positionX
-     * description on supprime l'anneau de notre choix
-     * et on ajoute un point au joueur,
-     * et on test si le jeu est terminee
-     */
-    public void remove_ring(int poisitonY, int positionX){
-        Color color = plateau[poisitonY][positionX];
-        if(color.Is_ring()){
-            gain_point(color);
-            end_game();
-            if(color.getColor()=="white"){
-                if(color.Is_marked()) plateau[poisitonY][positionX]=Color.WHITEMARK;
-                else plateau[poisitonY][positionX]=Color.NONE;
-            }
-            else {
-                if(color.Is_marked()) plateau[poisitonY][positionX]=Color.BLACKMARK;
-                else plateau[poisitonY][positionX]=Color.NONE;
-            }
-        }
-    }
-
-    /**
-     * @author amazyad
-     * @param color
-     * @description ajouter un point a un joueur
-     */
-    public void gain_point(Color color){
-        if(color.getColor() == "white") this.WhitePlayer++;
-        else if(color.getColor() == "black") this.BlackPlayer++;
-    }
-
-    /**
-     * @author amazyad
-     * @param positionYFrom
-     * @param positionXFrom
-     * @param positionYTo
-     * @param positionXTo
-     * @return true si le deplacement est possible, false sinon
-     */
-    public boolean is_possible_move(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo){
-        if(plateau[positionYFrom][positionXFrom].Is_ring() && plateau[positionYTo][positionXTo] == Color.NONE){
-            int beginX = 0, beginY = 0;
-            if (positionYTo - positionYFrom != 0) beginY = (positionYTo - positionYFrom) / Math.abs(positionYTo - positionYFrom);
-            if (positionXTo - positionXFrom != 0) beginX = (positionXTo - positionXFrom) / Math.abs(positionXTo - positionXFrom);
-            if(beginX * beginY == 1 || beginX * beginY == 0){
-                boolean mark_found = false;
-                for(int i = positionYFrom + beginY, j = positionXFrom + beginX; beginY * i <= beginY * positionYTo && beginX * j <= beginX * positionXTo; i = i + beginY, j = j + beginX){
-                    if(plateau[i][j].Is_ring() == true) return false;
-                    if(plateau[i][j] == Color.NONE && mark_found == true && (i != positionYTo || j != positionXTo)) return false;
-                    else if(plateau[i][j].Is_marked() == true) mark_found = true;
-                }
-                return true;
-            } else return false;
-        } else return false;
-    }
-
-    /**
-     * @author amazyad
-     * @param positionY
-     * @param positionX
-     * @return tous les deplacements possible pour une case
-     */
-    public int[][] get_possible_move(int positionY, int positionX){
-        //max possible move is 26
-        int [][] possible_move = new int[26][2];
-        int counter = 0; // to fill the array in the right index
-
-        //get possible move on the upper side of the column
-        if(plateau[positionY][positionX].Is_ring() == true){ //we can't move a marker
-            boolean mark_found = false; //needed to tell when we find a marker;
-            for(int i = (positionX + 1); i <= (BorderMax[positionY] - 1); i++){
-                if(plateau[positionY][i].Is_ring() == true) break; //we can't jump over a ring
-                else if(plateau[positionY][i] == Color.NONE){ //if empty
-                    //we fill it
-                    possible_move[counter][0] = positionY;
-                    possible_move[counter][1] = i;
-                    counter++; // inc the counter
-                    if(mark_found == true) break; //if we already passed by a marker then stop
-                }
-                //if marked, set mark_found to true so in the next iteration we know that we already passed a marker
-                else if(plateau[positionY][i].Is_marked() == true) mark_found = true;
-            }
-            //get possible move on the lower side of the column
-            mark_found = false; //needed to tell when we find a marker;
-            for(int i = (positionX - 1); i >= (BorderMin[positionY] - 1); i--){
-                if(plateau[positionY][i].Is_ring() == true) break;
-                else if(plateau[positionY][i] == Color.NONE){
-                    possible_move[counter][0] = positionY;
-                    possible_move[counter][1] = i;
-                    counter++;
-                    if(mark_found == true) break;
-                }
-                else if(plateau[positionY][i].Is_marked() == true) mark_found = true;
-            }
-            //get possible move on the right side of the line
-            mark_found = false; //needed to tell when we find a marker;
-            for(int i = (positionY + 1); i <= (maxColonne - 1) && positionX <= (BorderMax[i] - 1) ; i++){
-                if(plateau[i][positionX] == Color.IMPOSSIBLE) break;
-                else if(plateau[i][positionX].Is_ring() == true) break;
-                else if(plateau[i][positionX] == Color.NONE){
-                    possible_move[counter][0] = i;
-                    possible_move[counter][1] = positionX;
-                    counter++;
-                    if(mark_found == true) break;
-                }
-                else if(plateau[i][positionX].Is_marked() == true) mark_found = true;
-            }
-            //get possible move on the left side of the line
-            mark_found = false;
-            for(int i = (positionY - 1); i >= 0 && positionX >= (BorderMin[i] - 1) ; i--){
-                if(plateau[i][positionX] == Color.IMPOSSIBLE) break;
-                else if(plateau[i][positionX].Is_ring() == true) break;
-                else if(plateau[i][positionX] == Color.NONE){
-                    possible_move[counter][0] = i;
-                    possible_move[counter][1] = positionX;
-                    counter++;
-                    if(mark_found == true) break;
-                }
-                else if(plateau[i][positionX].Is_marked() == true) mark_found = true;
-            }
-            //get possible move on the up right side of the diagonal
-            mark_found = false;
-            for(int i = (positionY + 1), j = (positionX + 1); i  <= (maxColonne - 1) && j <= (BorderMax[i] - 1); i++, j++){
-                if(plateau[i][j] == Color.IMPOSSIBLE) break;
-                else if(plateau[i][j].Is_ring() == true) break;
-                else if(plateau[i][j] == Color.NONE){
-                    possible_move[counter][0] = i;
-                    possible_move[counter][1] = j;
-                    counter++;
-                    if(mark_found == true) break;
-                }
-                else if(plateau[i][j].Is_marked() == true) mark_found = true;
-            }
-            //get possible move on the down left side of the diagonal
-            mark_found = false;
-            for(int i = (positionY - 1), j = (positionX - 1); i >= 0 && j >= (BorderMin[i] - 1) ; i--, j--){
-                if(plateau[i][j] == Color.IMPOSSIBLE) break;
-                else if(plateau[i][j].Is_ring() == true) break;
-                else if(plateau[i][j] == Color.NONE){
-                    possible_move[counter][0] = i;
-                    possible_move[counter][1] = j;
-                    counter++;
-                    if(mark_found == true) break;
-                }
-                else if(plateau[i][j].Is_marked() == true) mark_found = true;
-            }
-        }
-        return possible_move;
-    }
-
-    /**
-     * @author amazyad
-     * @return tester si le jeu est terminee
-     * si un joueur a 1 point en mode blitz
-     * ou si il a 3 point en mode normal
-     */
-    public Color end_game(){
-        switch(mode){
-            case 0 :{
-                if(getnMarkers() == 0){
-                    if(BlackPlayer >  WhitePlayer)
-                        winner = Color.BLACKRING;
-                    else if(WhitePlayer > BlackPlayer)
-                        winner = Color.WHITERING;
-                    else
-                        winner = Color.NONE;
-                }
-                else if(BlackPlayer == 3) winner = Color.BLACKRING;
-                else if(WhitePlayer == 3) winner = Color.WHITERING;
-                else winner = null;
-            }
-            break;
-            case 1 :{
-                if(getnMarkers() == 0){
-                    if(BlackPlayer >  WhitePlayer) winner = Color.BLACKRING;
-                    else if(WhitePlayer > BlackPlayer) winner = Color.WHITERING;
-                    else winner = Color.NONE;
-                }
-                else if(BlackPlayer == 1) winner = Color.BLACKRING;
-                else if(WhitePlayer == 1) winner = Color.WHITERING;
-                else winner= null;
-            }
-        }
-        return winner;
-    }
 
 
 
-    public boolean initMatch() throws IOException, YinshException {
-        DataInputStream in=new DataInputStream(System.in);
-        byte colonne;
-        byte ligne;
-        int positionY;
-        int positionX;
-        this.setTurn(current_color());
-        //initialize the board
-        for(int i = 0; i < 5; i= i++){
-            this.printPlateau();
-            System.out.println(getTurn().getColor()+" player: enter a place to put a ring");
-            colonne = in.readByte();
-            ligne = in.readByte();
-            positionY = toY((char)colonne);
-            positionX = toX((int)ligne);
-            put_ring(positionY, positionX, this.getTurn());
-            this.changeTurn();
-            System.out.println(getTurn().getColor()+" player: enter a place to put a ring");
-            colonne = in.readByte();
-            ligne = in.readByte();
-            positionY = toY((char)colonne);
-            positionX = toX((int)ligne);
-            put_ring(positionY, positionX, this.getTurn());
-        }
-        return is_initialized();
+    public enum Mode {BLITZ, NORMAL}
 
-    }
-
-    public void Match() throws IOException, YinshException {
-        DataInputStream in=new DataInputStream(System.in);
-        byte colonne;
-        byte ligne;
-        if(initMatch()){
-            int positionY;
-            int positionX;
-
-            int positionYTo;
-            int positionXTo;
-            Color color;
-
-            this.changeTurn();
-            while(end_game() == null){
-                this.printPlateau();
-                while(row_exist()){
-                    remove_row();
-                    //choose ring to remove
-                    System.out.println(getTurn().getColor()+" player: enter the position of ring to remove");
-                    colonne = in.readByte();
-                    ligne = in.readByte();
-                    colonne = in.readByte();
-                    ligne = in.readByte();
-                    positionY = toY((char)colonne);
-                    positionX = toX((int)ligne);
-                    remove_ring(positionY, positionX);
-                }
-                //choose position to put marker
-                System.out.println(getTurn().getColor()+" player: enter a position to put marker");
-                colonne = in.readByte();
-                ligne = in.readByte();
-                positionY = toY((char)colonne);
-                positionX = toX((int)ligne);
-                if(this.getTurn().Is_black()) color = Color.BLACKMARK;
-                else color = Color.WHITEMARK;
-                put_marker(positionY, positionX, color);
-
-                //choose ring to move
-                System.out.println(getTurn().getColor()+" player: enter the position of a ring to move");
-                colonne = in.readByte();
-                ligne = in.readByte();
-                positionY = toY((char)colonne);
-                positionX = toX((int)ligne);
-                //choose place to move choosen ring  to
-                System.out.println(getTurn().getColor()+" player: enter the position to move the ring to");
-                colonne = in.readByte();
-                ligne = in.readByte();
-                positionYTo = toY((char)colonne);
-                positionXTo = toX((int)ligne);
-                move_ring(positionY, positionX, positionYTo, positionXTo);
-                flipMarkers(positionY, positionX, positionYTo, positionXTo);
-                while(row_exist()){
-                    remove_row();
-                    //choose ring to remove
-                    System.out.println(getTurn().getColor()+" player: enter e place to remove a ring");
-                    colonne = in.readByte();
-                    ligne = in.readByte();
-                    positionY = toY((char)colonne);
-                    positionX = toX((int)ligne);
-                    remove_ring(positionY, positionX);
-                }
-            }
-            if(winner == Color.NONE) System.out.println("Match Null");
-            else System.out.println(getTurn().getColor()+" player win");
-        }
-    }
-
-    /**
-     * @author amazyad
-     * @param positionYFrom
-     * @param positionXFrom
-     * @param positionYTo
-     * @param positionXTo
-     * @throws YinshException
-     * @description gerer les exceptions
-     */
-    public void test_exception(int positionYFrom, int positionXFrom, int positionYTo, int positionXTo) throws YinshException{
-        Color colorFrom = this.plateau[positionYFrom][positionXFrom];
-        Color colorTo = this.plateau[positionYTo][positionXTo];
-        if(winner != null)
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.GAME_ENDED);
-        if(positionYFrom != positionYTo && positionXFrom != positionXTo && (positionYFrom - positionYTo) != (positionXFrom - positionXTo))
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.STEP_ERROR);
-        if(colorTo == Color.IMPOSSIBLE)
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.IMPOSSIBLE);
-        if((colorFrom == Color.WHITEMARK || colorFrom == Color.BLACKMARK) && (colorTo != Color.WHITERING || colorTo == Color.BLACKRING))
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.NEED_A_RING);
-        if(this.getColor(colorFrom) != this.getColor(colorTo) && this.getColor(colorTo) != Color.NONE)
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.OTHER_PLAYER_FIELD);
-        if(this.getTurn() != getColor(colorFrom))
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.NOT_YOUR_RING_MARK);
-        if(colorTo == Color.WHITERINGMARKED || colorTo == Color.BLACKRINGMARKED)
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.FULL_CASE);
-        if(colorTo ==  colorFrom)
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.COLOR_ON_COLOR);
-        if(this.is_possible_move(positionYFrom, positionXFrom, positionYTo, positionXTo) == false)
-            throw new YinshException(this.plateau[positionYFrom][positionXFrom], TypeException.STEP_NOT_PERMITTED);
-    }
-
-    public void test_exception(Color colorFrom, Color colorTo) throws YinshException{
-        if(winner != null)
-            throw new YinshException(colorFrom, TypeException.GAME_ENDED);
-        if(colorTo == Color.IMPOSSIBLE)
-            throw new YinshException(colorFrom, TypeException.IMPOSSIBLE);
-        if((colorFrom == Color.WHITEMARK || colorFrom == Color.BLACKMARK) && (colorTo != Color.WHITERING && colorTo != Color.BLACKRING))
-            throw new YinshException(colorFrom, TypeException.NEED_A_RING);
-        if(this.getColor(colorFrom) != this.getColor(colorTo) && this.getColor(colorTo) != Color.NONE)
-            throw new YinshException(colorFrom, TypeException.OTHER_PLAYER_FIELD);
-        if(this.getTurn() != getColor(colorFrom))
-            throw new YinshException(colorFrom, TypeException.NOT_YOUR_RING_MARK);
-        if(colorTo == Color.WHITERINGMARKED || colorTo == Color.BLACKRINGMARKED)
-            throw new YinshException(colorFrom, TypeException.FULL_CASE);
-        if(colorTo ==  colorFrom)
-            throw new YinshException(colorFrom, TypeException.COLOR_ON_COLOR);
-    }
-
-
-    ///////////////////////////////////////////NEEDED FUNCTIONS //////////////////////////
-
-    /**
-     * @author amazyad
-     * @description afficher un tableau
-     */
-    public void printPlateau(){
-        System.out.print("|-");
-        System.out.print("-----");
-        System.out.print("-|");
-        for(int i=0; i<9;i++){
-            System.out.print("|-");
-            System.out.print("- "+(i+1)+" -");
-            System.out.print("-|");
-        }
-        System.out.print("|-");
-        System.out.print("- 10-");
-        System.out.print("-|");
-        System.out.print("|-");
-        System.out.print("- 11-");
-        System.out.print("-|");
-        System.out.println();
-        for(int i=0; i<=maxLigne;i++){
-            System.out.print("---------");
-        }
-        System.out.println();
-        for(int j=0; j<maxColonne; j++){
-            System.out.print("|-- "+(this.toY(j))+" --|");
-            for(int i=0; i<maxLigne;i++){
-                if(plateau[j][i]== Color.IMPOSSIBLE){
-                    System.out.print("|-");
-                    System.out.print("--I--");
-                    System.out.print("-|");
-                }
-                if(plateau[j][i]== Color.NONE){
-                    System.out.print("|-");
-                    System.out.print("     ");
-                    System.out.print("-|");
-                }
-                else if (plateau[j][i]== Color.WHITERING){
-                    System.out.print("|-");
-                    System.out.print(" W-R ");
-                    System.out.print("-|");
-                }
-                else if (plateau[j][i]== Color.BLACKRING){
-                    System.out.print("|-");
-                    System.out.print(" B-R ");
-                    System.out.print("-|");
-                }
-                else if (plateau[j][i]== Color.WHITEMARK){
-                    System.out.print("|-");
-                    System.out.print(" W-M ");
-                    System.out.print("-|");
-                }
-                else if (plateau[j][i]== Color.BLACKMARK){
-                    System.out.print("|-");
-                    System.out.print(" B-M ");
-                    System.out.print("-|");
-                }
-                else if (plateau[j][i]== Color.BLACKRINGMARKED){
-                    System.out.print("|-");
-                    System.out.print(" BRM ");
-                    System.out.print("-|");
-                }
-                else if (plateau[j][i]== Color.WHITERINGMARKED){
-                    System.out.print("|-");
-                    System.out.print(" WRM ");
-                    System.out.print("-|");
-                }
-            }
-            System.out.println();
-            for(int i=0; i<=maxLigne;i++){
-                System.out.print("---------");
-            }
-            System.out.println();
-        }
-    }
-
-    /**
-     *
-     * @param colonne
-     * @return le position
-     */
-    public int toY(char colonne){
-        int ascii = (int)colonne;
+    public int toY(char colonne) {
+        int ascii = (int) colonne;
         return ascii - 65;
     }
 
-    public char toY(int colonne){
-        char ascii = (char)(colonne + 65);
-        return ascii;
+
+    public int toX(int ligne) {
+        return ligne - 1;
     }
 
-    public int toX(int ligne){
-        ligne = ligne -1;
-        return ligne;
-    }
 
 }

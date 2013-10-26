@@ -1,156 +1,104 @@
 import junit.framework.TestCase;
 
+import java.util.List;
 
 public class aTest extends TestCase {
-
-    public aTest ( String name ) { super ( name ); }
-    public void test_current_color ()
-    {
-        Yinsh test = new Yinsh ();
-        Color color = test . current_color ();
-        assertTrue (color == Color.WHITERING || color == Color.BLACKRING);
+    public aTest(String name) {
+        super(name);
     }
-    public void test_put_ring_anneau_existe (){
+
+    public void testCurrentColor() throws Exception {
         Yinsh test = new Yinsh();
-        test.current_color();
-        int alpha=test.toY('B');
-        int ligne=test.toX(1);
-        Color color = test.getTurn();
+        Color color = test.currentColor();
+        assertTrue(color == Color.BLACK || color == Color.WHITE);
+    }
+
+    public void testPutRingInitialState() {
+        Yinsh test = new Yinsh();
+        int blackRing = test.getRingNumber(Color.BLACK);
+        int whiteRing = test.getRingNumber(Color.WHITE);
+        assertTrue(blackRing + whiteRing == 0);
+    }
+
+    public void testPutRingAfterPutRing() throws YinshException {
+        Yinsh test = new Yinsh();
+        Intersection point = test.board[3][4];
+        test.putRing(point, Color.WHITE);
+        int blackRing = test.getRingNumber(Color.BLACK);
+        int whiteRing = test.getRingNumber(Color.WHITE);
+        assertTrue(blackRing + whiteRing == 1);
+    }
+
+    public void testPutRingImpossible() {
+        Yinsh test = new Yinsh();
+        Intersection point = test.board[0][0];
         try {
-            test.put_ring(alpha, ligne, color);
-            assertTrue(test.anneau_existe(alpha, ligne, color));
+            test.putRing(point, Color.WHITE);
+            assertTrue(false);
         } catch (YinshException e) {
-            e.printStackTrace();
+            assertTrue(true);
         }
-
     }
 
-    public void test_put_ring_nombre_anneau(){
+    public void testPutRing() throws YinshException {
         Yinsh test = new Yinsh();
-        int blackRing=test.nombre_anneau(Color.BLACKRING);
-        int whiteRing=test.nombre_anneau(Color.WHITERING);
-        assertTrue((blackRing + whiteRing)==0);
+        Intersection point = test.board[3][4];
+        test.putRing(point, Color.BLACK);
+        assertTrue(test.board[3][4].getRing() && test.board[3][4].getColor() == Color.BLACK);
     }
 
-    public void test_is_initialized() throws YinshException{
+    public void testPutRingAlreadyExist() {
         Yinsh test = new Yinsh();
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-        assertTrue(test.is_initialized());
-
-    }
-
-    /**
-     * Cinquieme histoire test 1
-     * @throws YinshException
-     */
-    public void test_put_marker() throws YinshException{
-        Yinsh test = new Yinsh();
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
-        assertTrue(test.anneau_existe(test.toY('D'), test.toX(2), Color.BLACKRINGMARKED));
-    }
-    /**
-     * Cinquieme histoire test 2
-     * @throws YinshException
-     */
-    public void test_move_ring() throws YinshException{
-        Yinsh test = new Yinsh();
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.move_ring(test.toY('D'), test.toX(2), test.toY('D'), test.toX(5));
-        assertTrue(test.anneau_existe(test.toY('D'), test.toX(5), Color.BLACKRING));
-    }
-
-
-    /**
-     * Cinquieme histoire test 3
-     * @throws YinshException
-     */
-    public void test_put_marker_1() throws YinshException{
-        Yinsh test = new Yinsh();
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
-        test.move_ring(test.toY('D'), test.toX(2), test.toY('D'), test.toX(5));
         try {
-            test.put_marker(test.toY('D'), test.toX(3), Color.BLACKMARK);
+            test.putRing(test.board[3][4], Color.BLACK);
+            test.putRing(test.board[3][4], Color.BLACK);
+            assertTrue(false);
+        } catch (YinshException e) {
+            assertTrue(true);
+        }
+    }
+
+    public void testIsInitialized() throws YinshException {
+        Yinsh test = new Yinsh();
+        Intersection[] points = {test.board[3][4], test.board[3][5], test.board[3][6], test.board[3][7], test.board[3][8],
+                test.board[4][2], test.board[4][3], test.board[4][4], test.board[4][5], test.board[4][6]};
+        for (int i = 0; i < points.length; i += 2) {
+            test.putRing(points[i], Color.BLACK);
+            test.putRing(points[i + 1], Color.WHITE);
+        }
+        assertTrue(test.isInitialized());
+    }
+
+    void makeFig2(Yinsh test) throws YinshException {
+        Intersection[] blackPoints = {test.board[1][0], test.board[3][1], test.board[5][6], test.board[7][7], test.board[8][7]};
+        Intersection[] whitePoints = {test.board[1][1], test.board[2][1], test.board[3][5], test.board[5][7], test.board[7][5]};
+        for (int i = 0; i < blackPoints.length; i++) {
+            test.putRing(blackPoints[i], Color.BLACK);
+            test.putRing(whitePoints[i], Color.WHITE);
+        }
+    }
+
+    public void testPutMarker() throws YinshException {
+        Yinsh test = new Yinsh();
+        makeFig2(test);
+        test.putMarker(test.getIntersection('D', 2), Color.BLACK);
+        assertTrue(test.board[3][1].isMarker());
+    }
+
+    public void testMoveRing() throws YinshException {
+        Yinsh test = new Yinsh();
+        makeFig2(test);
+        test.putMarker(test.getIntersection('D', 2), Color.BLACK);
+        test.moveRing(test.getIntersection('D', 2), test.getIntersection('D', 5));
+        assertTrue(test.board[test.toY('D')][test.toX(5)].getRing() &&
+                !test.board[test.toY('D')][test.toX(2)].getRing());
+    }
+
+    public void testPutMarkerOnOtherPlayerRing() {
+        Yinsh test = new Yinsh();
+        try {
+            makeFig2(test);
+            test.putMarker(test.getIntersection('D', 2), Color.WHITE);
             assertTrue(false);
         } catch (YinshException e) {
             assertTrue(true);
@@ -158,422 +106,170 @@ public class aTest extends TestCase {
 
     }
 
-    /**
-     * Cinquieme histoire test 4
-     * @throws YinshException
-     */
-    public void test_put_marker_2() throws YinshException{
+    public void testPutMarkerOnEmptyField() {
         Yinsh test = new Yinsh();
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
         try {
-            test.move_ring(test.toY('D'), test.toX(2), test.toY('D'), test.toX(6));
-            assertTrue(false);
-        } catch (YinshException e) {
-            assertTrue(true);
-        }
-
-
-    }
-    /**
-     * Cinquieme histoire test 5
-     * @throws YinshException
-     */
-    public void test_put_marker_3() throws YinshException{
-        Yinsh test = new Yinsh();
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('B'), test.toX(1), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('B'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('D'), test.toX(2), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('C'), test.toX(2), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('F'), test.toX(7), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('D'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('G'), test.toX(9), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('G'), test.toX(8), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_ring(test.toY('J'), test.toX(8), Color.BLACKRING);
-        test.setTurn(Color.WHITERING);
-        test.put_ring(test.toY('H'), test.toX(6), Color.WHITERING);
-        test.setTurn(Color.BLACKRING);
-        test.put_marker(test.toY('D'), test.toX(2), Color.BLACKMARK);
-        try {
-            test.move_ring(test.toY('D'), test.toX(2), test.toY('I'), test.toX(7));
+            makeFig2(test);
+            test.putMarker(test.getIntersection('D', 3), Color.BLACK);
             assertTrue(false);
         } catch (YinshException e) {
             assertTrue(true);
         }
     }
 
-    /**
-     * 6eme histoire
-     * @throws YinshException
-     */
-    public void test_move_ring_ex6() throws YinshException{
+    public void testMoveRingTryJumpOverARing() {
         Yinsh test = new Yinsh();
-        test.plateau[4][3] = Color.BLACKRINGMARKED;
-        test.plateau[4][4] = Color.BLACKMARK;
-        test.plateau[4][5] = Color.WHITEMARK;
-        test.plateau[4][6] = Color.WHITEMARK;
-        test.plateau[4][7] = Color.BLACKMARK;
-        test.plateau[4][8] = Color.WHITEMARK;
-        test.plateau[4][9] = Color.NONE;
-        test.setTurn(Color.BLACKRING);
-        test.move_ring(test.toY('E'), test.toX(4), test.toY('E'), test.toX(10));
-        test.flipMarkers(test.toY('E'), test.toX(4), test.toY('E'), test.toX(10));
-        assertTrue(test.anneau_existe(test.toY('E'), test.toX(4), Color.BLACKMARK)
-                && test.anneau_existe(test.toY('E'), test.toX(6), Color.BLACKMARK)
-                && test.anneau_existe(test.toY('E'), test.toX(7), Color.BLACKMARK)
-                && test.anneau_existe(test.toY('E'), test.toX(9), Color.BLACKMARK)
-                && test.anneau_existe(test.toY('E'), test.toX(5), Color.WHITEMARK)
-                && test.anneau_existe(test.toY('E'), test.toX(8), Color.WHITEMARK));
-    }
-
-    /**
-     * 7eme histoire
-     */
-    public void test_remove_row(){
-        Yinsh test = new Yinsh();
-        test.plateau[4][5] = Color.BLACKMARK;
-        test.plateau[5][6] = Color.BLACKMARK;
-        test.plateau[6][7] = Color.BLACKMARK;
-        test.plateau[7][8] = Color.BLACKMARK;
-        test.plateau[8][9] = Color.BLACKMARK;
-        test.setTurn(Color.BLACKRING);
-        test.printPlateau();
-        System.out.println(test.is_row(test.toY('E'), test.toX(6), test.toY('I'), test.toX(10)));
-        test.remove_row(test.toY('E'), test.toX(6), test.toY('I'), test.toX(10));
-        test.printPlateau();
-        assertTrue(test.anneau_existe(test.toY('E'), test.toX(6), Color.NONE)
-                && test.anneau_existe(test.toY('F'), test.toX(7), Color.NONE)
-                && test.anneau_existe(test.toY('G'), test.toX(8), Color.NONE)
-                && test.anneau_existe(test.toY('H'), test.toX(9), Color.NONE)
-                && test.anneau_existe(test.toY('I'), test.toX(10), Color.NONE));
-    }
-
-    /**
-     * 7eme histoire
-     */
-    public void test_remove_ring(){
-        Yinsh test = new Yinsh();
-        test.plateau[7][9] = Color.BLACKRING;
-        test.remove_ring(7, 9);
-        assertTrue(test.anneau_existe(test.toY('E'), test.toX(6), Color.NONE)
-                && test.anneau_existe(test.toY('F'), test.toX(7), Color.NONE)
-                && test.anneau_existe(test.toY('G'), test.toX(8), Color.NONE)
-                && test.anneau_existe(test.toY('H'), test.toX(9), Color.NONE)
-                && test.anneau_existe(test.toY('I'), test.toX(10), Color.NONE)
-                && test.anneau_existe(test.toY('H'), test.toX(10), Color.NONE)
-                && test.BlackPlayer == 1);
-    }
-
-    /**
-     * 7eme histoire
-     */
-    public void test_add_player_a_point(){
-        Yinsh test = new Yinsh();
-        test.plateau[7][9] = Color.BLACKRING;
-        test.remove_ring(7, 9);
-        assertTrue(test.BlackPlayer == 1);
-    }
-
-    /**
-     * 8eme histoire
-     */
-    public void test_get_possible_move(){
-        Yinsh test = new Yinsh();
-        test.plateau[0][4] = Color.BLACKRING;
-        test.plateau[1][3] = Color.WHITERING;
-        test.plateau[1][4] = Color.BLACKMARK;
-        test.plateau[1][5] = Color.WHITERING;
-        test.plateau[2][3] = Color.BLACKMARK;
-        test.plateau[2][4] = Color.WHITEMARK;
-        test.plateau[2][5] = Color.WHITEMARK;
-        test.plateau[3][1] = Color.WHITERING;
-        test.plateau[3][2] = Color.BLACKRING;
-        test.plateau[3][5] = Color.WHITEMARK;
-        test.plateau[3][6] = Color.BLACKMARK;
-        test.plateau[4][2] = Color.WHITEMARK;
-        test.plateau[4][3] = Color.BLACKRING;
-        test.plateau[4][4] = Color.BLACKMARK;
-        test.plateau[4][5] = Color.WHITEMARK;
-        test.plateau[4][6] = Color.WHITEMARK;
-        test.plateau[4][7] = Color.BLACKMARK;
-        test.plateau[4][8] = Color.WHITEMARK;
-        test.plateau[5][7] = Color.WHITERING;
-        test.plateau[6][6] = Color.WHITERING;
-        test.plateau[6][7] = Color.BLACKRING;
-        test.plateau[6][8] = Color.WHITEMARK;
-        test.plateau[7][6] = Color.WHITEMARK;
-        test.plateau[7][7] = Color.BLACKRING;
-        test.plateau[8][7] = Color.BLACKMARK;
-        test.printPlateau();
-        int[][] possible_move = test.get_possible_move(test.toY('E') , test.toX(4));
-        String s="", s1="E10-E2-F4-G4-H4-I4-D4-F5-G6-J9-";
-        for(int i = 0; i < possible_move.length && possible_move[i][0] != 0 && possible_move[i][1] != 0; i++){
-            s+=test.toY(possible_move[i][0])+""+(possible_move[i][1]+1+"-");
+        try {
+            makeFig2(test);
+            test.moveRing(test.getIntersection('D', 2), test.getIntersection('I', 7));
+            assertTrue(false);
+        } catch (YinshException e) {
+            assertTrue(true);
         }
-        //facon rapide
-        assertTrue(s.equals(s1));
     }
 
-    /**
-     * 8eme histoire
-     */
-    public void test_is_possible_move(){
+    void makeFig3Rings(Yinsh test) {
+        int[][] blackRings = {{0, 4}, {3, 2}, {4, 3}, {6, 7}, {7, 7}};
+        int[][] whiteRings = {{1, 3}, {1, 5}, {3, 1}, {5, 7}, {6, 6}};
+        for (int[] whiteMarker : whiteRings) test.board[whiteMarker[0]][whiteMarker[1]].putRing(Color.WHITE);
+        for (int[] blackMarker : blackRings) test.board[blackMarker[0]][blackMarker[1]].putRing(Color.BLACK);
+    }
+
+    void makeFig3Markers(Yinsh test) {
+        int[][] blackMarkers = {{1, 4}, {2, 3}, {3, 6}, {4, 4}, {4, 7}, {8, 7}};
+        int[][] whiteMarkers = {{2, 4}, {2, 5}, {3, 5}, {4, 2}, {4, 5}, {4, 6}, {4, 8}, {6, 8}, {7, 6}};
+        for (int[] whiteMarker : whiteMarkers) test.board[whiteMarker[0]][whiteMarker[1]].putMarker(Color.WHITE);
+        for (int[] blackMarker : blackMarkers) test.board[blackMarker[0]][blackMarker[1]].putMarker(Color.BLACK);
+    }
+
+    public void testFlipMarkers() throws YinshException {
         Yinsh test = new Yinsh();
-        test.plateau[0][4] = Color.BLACKRING;
-        test.plateau[1][3] = Color.WHITERING;
-        test.plateau[1][4] = Color.BLACKMARK;
-        test.plateau[1][5] = Color.WHITERING;
-        test.plateau[2][3] = Color.BLACKMARK;
-        test.plateau[2][4] = Color.WHITEMARK;
-        test.plateau[2][5] = Color.WHITEMARK;
-        test.plateau[3][1] = Color.WHITERING;
-        test.plateau[3][2] = Color.BLACKRING;
-        test.plateau[3][5] = Color.WHITEMARK;
-        test.plateau[3][6] = Color.BLACKMARK;
-        test.plateau[4][2] = Color.WHITEMARK;
-        test.plateau[4][3] = Color.BLACKRING;
-        test.plateau[4][4] = Color.BLACKMARK;
-        test.plateau[4][5] = Color.WHITEMARK;
-        test.plateau[4][6] = Color.WHITEMARK;
-        test.plateau[4][7] = Color.BLACKMARK;
-        test.plateau[4][8] = Color.WHITEMARK;
-        test.plateau[5][7] = Color.WHITERING;
-        test.plateau[6][6] = Color.WHITERING;
-        test.plateau[6][7] = Color.BLACKRING;
-        test.plateau[6][8] = Color.WHITEMARK;
-        test.plateau[7][6] = Color.WHITEMARK;
-        test.plateau[7][7] = Color.BLACKRING;
-        test.plateau[8][7] = Color.BLACKMARK;
-        int YF = 4;
-        int XF = 3;
-        int YT = 9;
-        int XT = 8;
-        test.printPlateau();
-        boolean possible = test.is_possible_move(YF, XF, YT, XT);
-        assertTrue(possible);
+        makeFig3Rings(test);
+        makeFig3Markers(test);
+        test.board[test.toY('E')][test.toX(4)].putMarker(Color.BLACK);
+        test.moveRing(test.getIntersection('E', 4), test.getIntersection('E', 10));
+        assertTrue((test.board[test.toY('E')][test.toX(4)].getColor() == Color.BLACK) &&
+                (test.board[test.toY('E')][test.toX(6)].getColor() == Color.BLACK) &&
+                (test.board[test.toY('E')][test.toX(7)].getColor() == Color.BLACK) &&
+                (test.board[test.toY('E')][test.toX(9)].getColor() == Color.BLACK) &&
+                (test.board[test.toY('E')][test.toX(5)].getColor() == Color.WHITE) &&
+                (test.board[test.toY('E')][test.toX(8)].getColor() == Color.WHITE));
     }
 
-
-    public void make_fig_5(Yinsh test){
-        test.setTurn(Color.BLACKRING);
-        test.plateau[2][3] = Color.WHITERING;
-        test.plateau[3][1] = Color.BLACKMARK;
-        test.plateau[3][3] = Color.WHITERING;
-        test.plateau[3][4] = Color.WHITEMARK;
-        test.plateau[3][5] = Color.BLACKRING;
-        test.plateau[4][2] = Color.BLACKRING;
-        test.plateau[4][3] = Color.BLACKRING;
-        test.plateau[4][4] = Color.WHITEMARK;
-        test.plateau[4][5] = Color.BLACKMARK;
-        test.plateau[4][6] = Color.WHITEMARK;
-        test.plateau[4][7] = Color.WHITEMARK;
-        test.plateau[5][2] = Color.WHITERING;
-        test.plateau[5][3] = Color.BLACKMARK;
-        test.plateau[5][5] = Color.WHITERING;
-        test.plateau[5][6] = Color.BLACKMARK;
-        test.plateau[6][3] = Color.WHITEMARK;
-        test.plateau[6][5] = Color.BLACKRING;
-        test.plateau[6][6] = Color.WHITEMARK;
-        test.plateau[6][7] = Color.BLACKMARK;
-        test.plateau[7][7] = Color.WHITEMARK;
-        test.plateau[7][8] = Color.BLACKMARK;
-        test.plateau[7][9] = Color.BLACKRING;
-        test.plateau[8][7] = Color.WHITEMARK;
-        test.plateau[8][9] = Color.BLACKMARK;
-        test.plateau[7][6] = Color.WHITEMARK;
-        test.plateau[7][5] = Color.WHITEMARK;
-        test.plateau[7][4] = Color.WHITEMARK;
-        test.plateau[7][3] = Color.WHITEMARK;
-    }
-
-    /**
-     * 9eme histoire
-     */
-    public void test_mode_blitz(){
-        Yinsh test = new Yinsh(1);
-        // blitz mode
-        make_fig_5(test);
-        test.printPlateau();
-        test.remove_row(4, 5, 8, 9);
-        test.remove_ring(7, 9);
-        System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
-        assertTrue(test.winner == Color.BLACKRING);
-    }
-    //1.1.11 Onzieme Histoire
-    /**
-     * @author amazyad
-     * @description  Dans certaines configurations, un alignement de plus de 5 marqueurs est réalisé. Dans ce cas, le joueur
-     * doit indiquer quels sont les 5 marqueurs qui seront retirés du plateau.
-     */
-    public void test_histoire_onzieme(){
-        Yinsh test = new Yinsh(1);
-        make_fig_5(test);
-        test.plateau[9][10] = Color.BLACKMARK;
-        test.setTurn(Color.BLACKRING);
-        test.getRows();
-        if(test.row_exist()){
-            test.remove_row();
-            test.remove_ring(6, 5);
-            test.changeTurn();
-            if(test.row_exist()){
-                test.remove_row();
-                test.remove_ring(2, 3);
-            }
+    void makeFig5JustTheRow(Yinsh test) {
+        int[][] blackMarkers = {{4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}};
+        for (int[] blackMarker : blackMarkers) {
+            test.board[blackMarker[0]][blackMarker[1]].putMarker(Color.BLACK);
         }
-        test.printPlateau();
-        System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
-        assertTrue(test.BlackPlayer == 1 && test.WhitePlayer == 1);
+        test.board[7][9].putRing(Color.BLACK);
     }
 
-    //1.1.12 douzieme Histoire
-    /**
-     * @author amazyad
-     * @description  Une partie normale se termine lorsque trois parmi les 5 anneaux d’un joueur ont été retirés.
-     */
-
-    public void test_douzieme_histoire_mode_normal(){
-        Yinsh test = new Yinsh(0);
-        make_fig_5(test);
-        test.printPlateau();
-        test.remove_ring(6, 5);
-        test.remove_ring(3, 5);
-        test.remove_ring(4, 3);
-        test.printPlateau();
-        test.end_game();
-        System.out.println(test.winner);
-        System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
-        assertTrue(test.BlackPlayer == 3 && test.winner == Color.BLACKRING );
-    }
-
-
-    //1.1.13 trezieme Histoire
-    /**
-     * @author amazyad
-     * @description  En réalité le nombre total de marqueurs est limité à 51.
-     */
-    public void test_trezieme_histoire_51_markers(){
+    public void testRemoveRow() {
         Yinsh test = new Yinsh();
-        make_fig_5(test);
-        test.printPlateau();
+        makeFig5JustTheRow(test);
+        test.setTurn(test.getBlackPlayer());
+        test.removeRow(test.board[4][5], test.board[8][9]);
+        test.removeRing(test.board[7][9]);
+        assertTrue(!test.board[4][5].isMarker() &&
+                !test.board[5][6].isMarker() &&
+                !test.board[6][7].isMarker() &&
+                !test.board[7][8].isMarker() &&
+                !test.board[8][9].isMarker() &&
+                !test.board[7][9].getRing() &&
+                test.getBlackPlayer().getScore() == 1);
+    }
+
+    public void testGetPossibleMove() {
+        Yinsh test = new Yinsh();
+        makeFig3Rings(test);
+        makeFig3Markers(test);
+        List<Intersection> points = test.getPossibleMove(test.board[4][3]);
+        for (int i = 0; i < points.size(); i++)
+            assertTrue(points.contains(test.board[test.toY('E')][test.toX(2)]) &&
+                    points.contains(test.board[test.toY('E')][test.toX(10)]) &&
+                    points.contains(test.board[test.toY('D')][test.toX(4)]) &&
+                    points.contains(test.board[test.toY('F')][test.toX(4)]) &&
+                    points.contains(test.board[test.toY('G')][test.toX(4)]) &&
+                    points.contains(test.board[test.toY('H')][test.toX(4)]) &&
+                    points.contains(test.board[test.toY('I')][test.toX(4)]) &&
+                    points.contains(test.board[test.toY('F')][test.toX(5)]) &&
+                    points.contains(test.board[test.toY('G')][test.toX(6)]) &&
+                    points.contains(test.board[test.toY('J')][test.toX(9)]));
+
+    }
+
+    public void testBlitzGame() {
+        Yinsh test = new Yinsh();
+        test.setMode(Yinsh.Mode.BLITZ);
+        makeFig5JustTheRow(test);
+        test.setTurn(test.getBlackPlayer());
+        test.removeRow(test.board[4][5], test.board[8][9]);
+        test.removeRing(test.board[7][9]);
+        test.tryEndTheMatch();
+        assertTrue(test.getWinner() == test.getBlackPlayer() && test.isEnd());
+    }
+
+
+    void makeFig2DifferentColorRow(Yinsh test) {
+        makeFig5JustTheRow(test);
+        int[][] whiteMarkers = {{3, 5}, {3, 6}, {3, 7}, {3, 8}, {3, 9}};
+        for (int[] whiteMarker : whiteMarkers) {
+            test.board[whiteMarker[0]][whiteMarker[1]].putMarker(Color.WHITE);
+        }
+        test.board[2][3].putRing(Color.WHITE);
+    }
+
+    public void testRemoveRowFromMultipleRows() {
+        Yinsh test = new Yinsh();
+        makeFig5JustTheRow(test);
+        test.setTurn(test.getBlackPlayer());
+        List<Intersection[]> rows = test.getRows();
+        test.removeRow(rows.get(1)[0], rows.get(1)[1]);
+        test.removeRing(test.board[7][9]);
+        assertTrue(!test.board[5][6].isMarker() &&
+                !test.board[6][7].isMarker() &&
+                !test.board[7][8].isMarker() &&
+                !test.board[8][9].isMarker() &&
+                !test.board[9][10].isMarker() &&
+                !test.board[7][9].getRing() &&
+                test.getBlackPlayer().getScore() == 1);
+    }
+
+    public void testDifferentRowColor() {
+        Yinsh test = new Yinsh();
+        makeFig2DifferentColorRow(test);
+        test.setTurn(test.getBlackPlayer());
+        List<Intersection[]> rows = test.getRows();
+        test.removeRow(rows.get(0)[0], rows.get(0)[1]);
+        test.removeRing(test.board[7][9]);
+        test.changeTurn();
+        rows = test.getRows();
+        test.removeRow(rows.get(0)[0], rows.get(0)[1]);
+        test.removeRing(test.board[2][3]);
+        assertTrue(test.getBlackPlayer().getScore() == 1 && test.getWhitePlayer().getScore() == 1);
+    }
+
+    public void testNormalMode() {
+        Yinsh test = new Yinsh();
+        test.setMode(Yinsh.Mode.NORMAL);
+        test.getBlackPlayer().setScore(3);
+        test.tryEndTheMatch();
+        assertTrue(test.isEnd() && test.getWinner() == test.getBlackPlayer());
+    }
+
+    public void testNullMatch() {
+        Yinsh test = new Yinsh();
         test.setnMarkers(0);
-        try{
-            test.put_marker(0,1,Color.BLACKMARK);
-            assertTrue(false);
-        } catch(YinshException e){
-            test.end_game();
-            assertTrue(true);
-        }
-        System.out.println("BlackPoint = "+test.BlackPlayer + " || "+"WhitePoint = "+test.WhitePlayer);
-        assertTrue(test.winner != null );
+        test.tryEndTheMatch();
+        assertTrue(test.isEnd() && test.getWinner() == null);
     }
 
-    //test supplementaire
-    public void test_game(){
+    public void testBlackWinnerWith2Points() {
         Yinsh test = new Yinsh();
-        //uncomment if you want to test the game
-        /*
-        try {
-            test.Match();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (YinshException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        */
-    }
-    /**
-     * tester le rows sur le lignes
-     * doit avoir 3 rows
-     */
-    public void test_rows_line_white(){
-        Yinsh test = new Yinsh();
-        make_fig_5(test);
-        test.plateau[8][3] = Color.WHITEMARK;
-        test.plateau[8][4] = Color.WHITEMARK;
-        test.plateau[8][5] = Color.WHITEMARK;
-        test.plateau[8][6] = Color.WHITEMARK;
-        test.plateau[8][8] = Color.WHITEMARK;
-        test.printPlateau();
-        test.setTurn(Color.WHITERING);
-        test.getRows();
-        int[][] rows = test.rows;
-        int counter = 0;
-        for(int i = 0; i < rows.length && rows[i][0] != 0 && rows[i][1] != 0; i++){
-            counter++;
-            System.out.println(rows[i][0]+" "+rows[i][1]+" -> "+rows[i][2]+" "+rows[i][3]);
-        }
-        assertTrue(counter == 3);
-    }
-
-    /**
-     * tester le rows sur column
-     * doit avoir 1 rows
-     */
-    public void test_rows_col_white(){
-        Yinsh test = new Yinsh();
-        make_fig_5(test);
-        test.plateau[5][4] = Color.WHITEMARK;
-        test.plateau[6][4] = Color.WHITEMARK;
-        test.plateau[6][4] = Color.WHITEMARK;
-        test.plateau[7][5] = Color.NONE;
-        test.printPlateau();
-        test.setTurn(Color.WHITERING);
-        test.getRows();
-        int[][] rows = test.rows;
-        int counter = 0;
-        for(int i = 0; i < rows.length && rows[i][0] != 0 && rows[i][1] != 0; i++){
-            counter++;
-            System.out.println(rows[i][0]+" "+rows[i][1]+" -> "+rows[i][2]+" "+rows[i][3]);
-        }
-        assertTrue(counter == 1);
-    }
-
-    /**
-     * tester le rows sur diagonale
-     * doit avoir 2 rows
-     */
-    public void test_rows_diag_black(){
-        Yinsh test = new Yinsh();
-        make_fig_5(test);
-        test.plateau[9][10] = Color.BLACKMARK;
-        test.printPlateau();
-        test.setTurn(Color.BLACKRING);
-        test.getRows();
-        int[][] rows = test.rows;
-        int counter = 0;
-        for(int i = 0; i < rows.length && rows[i][0] != 0 && rows[i][1] != 0; i++){
-            counter++;
-            System.out.println(rows[i][0]+" "+rows[i][1]+" -> "+rows[i][2]+" "+rows[i][3]);
-        }
-        assertTrue(counter == 2);
+        test.setMode(Yinsh.Mode.NORMAL);
+        test.getBlackPlayer().setScore(2);
+        test.setnMarkers(0);
+        test.tryEndTheMatch();
+        assertTrue(test.isEnd() && test.getWinner() == test.getBlackPlayer());
     }
 }
